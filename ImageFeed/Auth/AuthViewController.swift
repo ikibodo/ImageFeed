@@ -5,6 +5,7 @@
 //  Created by N L on 24.10.24..
 //
 
+import Foundation
 import UIKit
 
 protocol AuthViewControllerDelegate: AnyObject {
@@ -13,6 +14,8 @@ protocol AuthViewControllerDelegate: AnyObject {
 
 final class AuthViewController: UIViewController {
     
+    private let oauth2Service = OAuth2Service.shared
+    private let oauth2TokenStorage = OAuth2TokenStorage.shared
     private let showWebViewSegueIdentifier = "ShowWebView"
     
     weak var delegate: AuthViewControllerDelegate?
@@ -46,8 +49,17 @@ final class AuthViewController: UIViewController {
 
 extension AuthViewController: WebViewViewControllerDelegate {
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String) {
-       delegate?.authViewController(self, didAuthenticateWithCode: code)
-         }
+        oauth2Service.fetchOAuthToken(code) { result in
+            switch result {
+            case .success(let response):
+                self.oauth2TokenStorage.token = response
+                self.dismiss(animated: true)
+                self.delegate?.authViewController(self, didAuthenticateWithCode: code)
+            case .failure(_):
+                print("NL: Ошибка авторизации - func webViewViewController")
+            }
+        }
+    }
     
     func webViewViewControllerDidCancel(_ vc: WebViewViewController) {
         dismiss(animated: true)

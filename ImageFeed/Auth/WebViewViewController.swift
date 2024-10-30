@@ -5,8 +5,9 @@
 //  Created by N L on 24.10.24..
 //
 
+import Foundation
 import UIKit
-@preconcurrency import WebKit
+import WebKit
 
 enum WebViewConstants {
     static let unsplashAuthorizeURLString = "https://unsplash.com/oauth/authorize"
@@ -67,7 +68,7 @@ final class WebViewViewController: UIViewController {
     
     private func loadAuthView() {
         guard var urlComponents = URLComponents(string: WebViewConstants.unsplashAuthorizeURLString) else {
-            print("Ошибка загрузки")
+            print("NL: Ошибка загрузки loadAuthView")
             return }
         
         urlComponents.queryItems = [
@@ -78,7 +79,7 @@ final class WebViewViewController: UIViewController {
         ]
         
         guard let url = urlComponents.url else {
-            print("Ошибка загрузки")
+            print("NL: Ошибка сборки и загрузки loadAuthView")
             return }
         let request = URLRequest(url: url)
         webView.load(request)
@@ -105,10 +106,11 @@ extension WebViewViewController: WKNavigationDelegate {
             let urlComponents = URLComponents(string: url.absoluteString),
             urlComponents.path == "/oauth/authorize/native",
             let items = urlComponents.queryItems,
-            let codeItem = items.first(where: { $0.name == "code" })
+            let code = items.first(where: { $0.name == "code" })
         {
-            return codeItem.value
+            return code.value
         } else {
+            print("NL: Нет кода авторизации в WebViewViewController")
             return nil
         }
     }

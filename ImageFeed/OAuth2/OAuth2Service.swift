@@ -5,9 +5,13 @@
 //  Created by N L on 25.10.24..
 //
 import Foundation
+import UIKit
 
 final class OAuth2Service {
+
     static let shared = OAuth2Service()
+    private let oauth2TokenStorage = OAuth2TokenStorage.shared
+    
     init() {}
     
     func fetchOAuthToken(_ code: String, completion: @escaping (Result<String, Error>) -> Void) {
@@ -30,8 +34,9 @@ final class OAuth2Service {
                 do {
                     let decoder = JSONDecoder()
                     let response = try decoder.decode(OAuthTokenResponseBody.self, from: data)
-                    completion(.success(response.accessToken))//  далее передаем аксесс токен, который сохраняем в Storage и отправляем по навигации пользователя в ленты с фотографиями:
-                    OAuth2TokenStorage().token = response.accessToken
+                    completion(.success(response.accessToken))
+                    self.oauth2TokenStorage.token = response.accessToken
+
                 } catch {
                     completion(.failure(NetworkError.noJSONDecoding))
                 }
@@ -50,7 +55,7 @@ final class OAuth2Service {
             + "&&code=\(code)"
             + "&&grant_type=authorization_code"
         ) else {
-            print("OAuthTokenRequest failed")
+            print("NL: OAuthTokenRequest failed")
             return nil }
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
