@@ -5,7 +5,6 @@
 //  Created by N L on 24.10.24..
 //
 
-import Foundation
 import UIKit
 
 protocol AuthViewControllerDelegate: AnyObject {
@@ -15,7 +14,7 @@ protocol AuthViewControllerDelegate: AnyObject {
 final class AuthViewController: UIViewController {
     
     private let oauth2Service = OAuth2Service.shared
-    private let oauth2TokenStorage = OAuth2TokenStorage.shared
+    private let oauth2TokenStorage = OAuth2TokenStorage()
     private let showWebViewSegueIdentifier = "ShowWebView"
     
     weak var delegate: AuthViewControllerDelegate?
@@ -47,20 +46,19 @@ final class AuthViewController: UIViewController {
     }
 }
 
-extension AuthViewController: WebViewViewControllerDelegate {
-    func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String) {
-        oauth2Service.fetchOAuthToken(code) { result in
+extension AuthViewController: WebViewViewControllerDelegate  {
+    func webViewViewController(_ Vc: WebViewViewController, didAuthenticateWithCode code: String) {
+        dismiss (animated: true)
+        oauth2Service.fetchOAuthToken(code, completion: {result in
             switch result {
-            case .success(let response):
-                self.oauth2TokenStorage.token = response
-                self.dismiss(animated: true)
+            case.success (let responce):
+                self.oauth2TokenStorage.token = responce
                 self.delegate?.authViewController(self, didAuthenticateWithCode: code)
-            case .failure(_):
-                print("NL: Ошибка авторизации - func webViewViewController")
+            case.failure(_):
+                print("NL: Ошибка в AuthViewController.webViewViewController")
             }
-        }
+        })
     }
-    
     func webViewViewControllerDidCancel(_ vc: WebViewViewController) {
         dismiss(animated: true)
     }

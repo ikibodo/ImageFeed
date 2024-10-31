@@ -327,8 +327,17 @@
                     <view key="view" contentMode="scaleToFill" id="wqI-Kr-iA0">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="splash_screen_logo" translatesAutoresizingMaskIntoConstraints="NO" id="HDB-Vr-ulh">
+                                <rect key="frame" x="160.33333333333334" y="388.33333333333331" width="72.666666666666657" height="75.333333333333314"/>
+                            </imageView>
+                        </subviews>
                         <viewLayoutGuide key="safeArea" id="OCf-xY-GLb"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <color key="backgroundColor" red="0.1019607857" green="0.10588235410000001" blue="0.13333334029999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="HDB-Vr-ulh" firstAttribute="centerX" secondItem="wqI-Kr-iA0" secondAttribute="centerX" id="hZb-4v-Id6"/>
+                            <constraint firstItem="HDB-Vr-ulh" firstAttribute="centerY" secondItem="wqI-Kr-iA0" secondAttribute="centerY" id="qGe-5Y-jUt"/>
+                        </constraints>
                     </view>
                     <connections>
                         <segue destination="CDo-En-PLq" kind="presentation" identifier="ShowAuthenticationScreen" modalPresentationStyle="fullScreen" id="nSA-tz-5Hr"/>
@@ -336,7 +345,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="6Rx-Am-mTr" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-2047" y="-1531"/>
+            <point key="canvasLocation" x="-2048.0916030534349" y="-1531.6901408450706"/>
         </scene>
     </scenes>
     <resources>
@@ -345,6 +354,7 @@
         <image name="like_button_on" width="42" height="42"/>
         <image name="nav_back_button_white" width="24" height="24"/>
         <image name="share_button" width="51" height="51"/>
+        <image name="splash_screen_logo" width="72.666664123535156" height="75.333335876464844"/>
         <image name="tab_editorial_active" width="30.333333969116211" height="30"/>
         <image name="tab_profile_active" width="30.333333969116211" height="30"/>
         <systemColor name="systemBackgroundColor">

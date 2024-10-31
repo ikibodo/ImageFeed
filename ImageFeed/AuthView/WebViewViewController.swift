@@ -92,7 +92,7 @@ extension WebViewViewController: WKNavigationDelegate {
         decidePolicyFor navigationAction: WKNavigationAction,
         decisionHandler: @escaping (WKNavigationActionPolicy) -> Void
     ) {
-        if let code = code(from: navigationAction) {
+        if let code = fetchCode(from: navigationAction) {
             delegate?.webViewViewController(self, didAuthenticateWithCode: code)
             decisionHandler(.cancel)
         } else {
@@ -100,15 +100,16 @@ extension WebViewViewController: WKNavigationDelegate {
         }
     }
     
-    private func code(from navigationAction: WKNavigationAction) -> String? {
+    private func fetchCode(from navigationAction: WKNavigationAction) -> String? {
         if
             let url = navigationAction.request.url,
             let urlComponents = URLComponents(string: url.absoluteString),
             urlComponents.path == "/oauth/authorize/native",
             let items = urlComponents.queryItems,
-            let code = items.first(where: { $0.name == "code" })
+            let codeItem = items.first(where: { $0.name == "code" })
         {
-            return code.value
+            print("NL: Получен код авторизации:", url)
+            return codeItem.value
         } else {
             print("NL: Нет кода авторизации в WebViewViewController")
             return nil

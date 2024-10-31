@@ -8,13 +8,14 @@ import Foundation
 import UIKit
 
 final class OAuth2Service {
-
+    
     static let shared = OAuth2Service()
-    private let oauth2TokenStorage = OAuth2TokenStorage.shared
+    private let oauth2TokenStorage = OAuth2TokenStorage()
     
     init() {}
     
     func fetchOAuthToken(_ code: String, completion: @escaping (Result<String, Error>) -> Void) {
+        assert(Thread.isMainThread)
         
         guard let request = makeOAuthTokenRequest(code: code) else { return }
         
@@ -36,7 +37,7 @@ final class OAuth2Service {
                     let response = try decoder.decode(OAuthTokenResponseBody.self, from: data)
                     completion(.success(response.accessToken))
                     self.oauth2TokenStorage.token = response.accessToken
-
+                    
                 } catch {
                     completion(.failure(NetworkError.noJSONDecoding))
                 }
