@@ -8,6 +8,10 @@ import UIKit
 
 final class ProfileViewController: UIViewController {
     
+    let token = OAuth2TokenStorage().token
+    
+    private let profileService = ProfileService.shared
+    
     private var avatarImageView: UIImageView = {
         let avatarImageView = UIImageView()
         avatarImageView.image = UIImage(named: "avatar")
@@ -56,6 +60,33 @@ final class ProfileViewController: UIViewController {
         addSubViews()
         addConstraints()
         logoutButton.addTarget(self, action: #selector(didTapLogoutButton), for: .touchUpInside)
+        
+        if let profile = profileService.profile {
+            updateProfileDetails(profile: profile)
+        }
+        
+        if let profile = profileService.profile {
+            nameLabel.text = profile.name
+            loginNameLabel.text = profile.loginName
+            descriptionLabel.text = profile.bio
+        }
+        //        profileService.fetchProfile(_: token ?? "") { [weak self] result in
+        //            guard let self = self else { return }
+        //            switch result {
+        //            case.success:
+        //                guard let profile = profileService.profile else { return }
+        //                nameLabel.text = profile.name
+        //                loginNameLabel.text = profile.loginName
+        //                descriptionLabel.text = profile.bio
+        //            case.failure:
+        //                print("NL: Ошибка d SplashViewController.fetchOAuthToken")
+        //            }
+        //        }
+    }
+    private func updateProfileDetails(profile: Profile) {
+        nameLabel.text = profile.name
+        loginNameLabel.text = profile.loginName
+        descriptionLabel.text = profile.bio
     }
     
     private func addSubViews() {

@@ -6,9 +6,11 @@
 //
 
 import UIKit
+import ProgressHUD
+
 
 protocol AuthViewControllerDelegate: AnyObject {
-    func authViewController(_ vc: AuthViewController, didAuthenticateWithCode code: String)
+    func didAuthenticate(_ vc: AuthViewController, didAuthenticateWithCode code: String) // раньше была authViewController но стала шире
 }
 
 final class AuthViewController: UIViewController {
@@ -48,11 +50,19 @@ final class AuthViewController: UIViewController {
 
 extension AuthViewController: WebViewViewControllerDelegate  {
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String) {
+        
+        // ProgressHUD.animate()
+        UIBlockingProgressHUD.show()
+        
         oauth2Service.fetchOAuthToken(code, completion: { [weak self] result in
             guard let self = self else { return }
+            
+            // ProgressHUD.dismiss()
+            UIBlockingProgressHUD.dismiss()
+            
             switch result {
             case.success (_):
-                delegate?.authViewController(self, didAuthenticateWithCode: code)
+                delegate?.didAuthenticate(self, didAuthenticateWithCode: code)
             case.failure(_):
                 print("NL: Ошибка в AuthViewController.webViewViewController")
             }

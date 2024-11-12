@@ -2,33 +2,32 @@
 //  Untitled.swift
 //  ImageFeed
 //
-//  Created by N L on 25.10.24..
+//  Created by N L on 10.11.24..
 //
 import Foundation
 import UIKit
 
-final class OAuth2Service {
+final class ProfileService {
     
-    static let shared = OAuth2Service()
-    private let oauth2TokenStorage = OAuth2TokenStorage()
+    static let shared = ProfileService()
     private init() {}
     
-    private let urlSession = URLSession.shared
+    private let oauth2TokenStorage = OAuth2TokenStorage()
+    private(set) var profile: Profile?
     private var task: URLSessionTask?
-    private var lastCode: String?
+    private var lastToken: String?
     
-    func fetchOAuthToken(_ code: String, completion: @escaping (Result<String, Error>) -> Void) {
+    func fetchProfile(_ token: String, completion: @escaping (Result<Profile, Error>) -> Void) {
         assert(Thread.isMainThread)
-        
-        guard lastCode != code else {
+        guard lastToken != token else {
             completion(.failure(NetworkError.invalidRequest))
             return
         }
         
         task?.cancel()
-        lastCode = code
+        lastToken = token
         
-        guard let request = makeOAuthTokenRequest(code: code)
+        guard let request = profilRequest(token: token)
         else {
             completion(.failure(NetworkError.invalidRequest))
             return
@@ -49,37 +48,35 @@ final class OAuth2Service {
                 if let data {
                     do {
                         let decoder = JSONDecoder()
-                        let response = try decoder.decode(OAuthTokenResponseBody.self, from: data)
-                        completion(.success(response.accessToken))
-                        self?.oauth2TokenStorage.token = response.accessToken
-                        
+                        let response = try decoder.decode(ProfileResult.self, from: data)
+                        let profile = Profile(profileResult: response)
+                        self?.profile = profile
+                        completion(.success(profile))
                     } catch {
                         completion(.failure(NetworkError.noJSONDecoding))
                     }
                     return
                 }
                 self?.task = nil
-                self?.lastCode = nil
+                self?.lastToken = nil
             }
         }
         self.task = task
         task.resume()
     }
     
-    func makeOAuthTokenRequest(code: String) -> URLRequest? {
+    func profilRequest(token: String) -> URLRequest? {
         guard let url = URL(
-            string: "https://unsplash.com"
-            + "/oauth/token"
-            + "?client_id=\(Constants.accessKey)"
-            + "&&client_secret=\(Constants.secretKey)"
-            + "&&redirect_uri=\(Constants.redirectURI)"
-            + "&&code=\(code)"
-            + "&&grant_type=authorization_code"
-        ) else {
-            print("NL: OAuthTokenRequest failed")
-            return nil }
+            string: "https://api.unsplash.com"
+            + "/me"
+        )
+        else {
+            print("NL: profilRequest failed")
+            return nil
+        }
         var request = URLRequest(url: url)
-        request.httpMethod = "POST"
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(oauth2TokenStorage.token ?? "")", forHTTPHeaderField: "Authorization")
         return request
     }
 }

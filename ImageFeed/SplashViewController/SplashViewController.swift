@@ -4,20 +4,22 @@
 //
 //  Created by N L on 28.10.24..
 //
-
 import Foundation
 import UIKit
+import ProgressHUD
 
 final class SplashViewController: UIViewController {
     private let ShowAuthenticationScreenSegueIdentifier = "ShowAuthenticationScreen"
     private let oauth2Service = OAuth2Service.shared
     private let oauth2TokenStorage = OAuth2TokenStorage()
+    private let profileService = ProfileService.shared
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
         if let token = oauth2TokenStorage.token {
-            switchToTabBarController()
+          //  switchToTabBarController()
+            self.fetchProfile(token: token)
         } else {
             performSegue(withIdentifier: ShowAuthenticationScreenSegueIdentifier, sender: nil)
         }
@@ -61,12 +63,14 @@ extension SplashViewController {
 }
 
 extension SplashViewController: AuthViewControllerDelegate {
-    func authViewController(_ vc: AuthViewController, didAuthenticateWithCode code: String) {
+    func didAuthenticate(_ vc: AuthViewController, didAuthenticateWithCode code: String) {
         DispatchQueue.main.async {
             self.dismiss(animated: true) { [weak self] in
                 guard let self = self else { return }
                 self.fetchOAuthToken(code)
             }
+            guard let token = self.oauth2TokenStorage.token else { return }
+            self.fetchProfile(token: token)
         }
     }
     
@@ -77,8 +81,22 @@ extension SplashViewController: AuthViewControllerDelegate {
             case.success:
                 self.switchToTabBarController()
             case.failure:
-                print("NL: Ошибка d SplashViewController.fetchOAuthToken")
+                print("NL: Ошибка в SplashViewController.fetchOAuthToken")
             }
         })
+    }
+    private func fetchProfile(token: String) {
+        UIBlockingProgressHUD.show()
+        profileService.fetchProfile(token) { [weak self] result in
+            UIBlockingProgressHUD.dismiss()
+            guard let self = self else { return }
+            switch result {
+            case .success:
+                self.switchToTabBarController()
+            case .failure:
+                print("NL: Ошибка в SplashViewController.fetchProfile")
+                break
+            }
+        }
     }
 }
