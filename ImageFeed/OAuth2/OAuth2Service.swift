@@ -11,15 +11,14 @@ final class OAuth2Service {
     
     static let shared = OAuth2Service()
     private let oauth2TokenStorage = OAuth2TokenStorage()
-    private init() {}
-    
     private let urlSession = URLSession.shared
     private var task: URLSessionTask?
     private var lastCode: String?
     
+    private init() {}
+    
     func fetchOAuthToken(_ code: String, completion: @escaping (Result<String, Error>) -> Void) {
         assert(Thread.isMainThread)
-        
         guard lastCode != code else {
             completion(.failure(NetworkError.invalidRequest))
             return
@@ -33,38 +32,54 @@ final class OAuth2Service {
             completion(.failure(NetworkError.invalidRequest))
             return
         }
-        
-        let task = URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
-            DispatchQueue.main.async {
-                if let response = response as? HTTPURLResponse, response.statusCode < 200 || response.statusCode >= 300 {
-                    completion(.failure(NetworkError.httpStatusCode(response.statusCode)))
-                    return
-                }
-                
-                if let error {
-                    completion(.failure(NetworkError.urlRequestError(error)))
-                    return
-                }
-                
-                if let data {
-                    do {
-                        let decoder = JSONDecoder()
-                        let response = try decoder.decode(OAuthTokenResponseBody.self, from: data)
-                        completion(.success(response.accessToken))
-                        self?.oauth2TokenStorage.token = response.accessToken
-                        
-                    } catch {
-                        completion(.failure(NetworkError.noJSONDecoding))
-                    }
-                    return
-                }
-                self?.task = nil
-                self?.lastCode = nil
+        let task = urlSession.objectTask(for: request) { [weak self] (result: Result<OAuthTokenResponseBody, Error>) in
+            switch result {
+            case .success(let data):
+                completion(.success(data.accessToken))
+                self?.oauth2TokenStorage.token = data.accessToken
+            case .failure(let error):
+                print("NL: Ошибка декодирования в OAuth2Service")
+                completion(.failure(error))
             }
+            self?.task = nil
+            self?.lastCode = nil
         }
         self.task = task
         task.resume()
     }
+    
+    //  прошлый вариант - удалить как заработает новый
+    //        let task = urlSession.dataTask(with: request) { [weak self] data, response, error in
+    //            DispatchQueue.main.async {
+    //                if let response = response as? HTTPURLResponse, response.statusCode < 200 || response.statusCode >= 300 {
+    //                    completion(.failure(NetworkError.httpStatusCode(response.statusCode)))
+    //                    return
+    //                }
+    //
+    //                if let error {
+    //                    completion(.failure(NetworkError.urlRequestError(error)))
+    //                    return
+    //                }
+    //
+    //                if let data {
+    //                    do {
+    //                        let decoder = JSONDecoder()
+    //                        let response = try decoder.decode(OAuthTokenResponseBody.self, from: data)
+    //                        completion(.success(response.accessToken))
+    //                        self?.oauth2TokenStorage.token = response.accessToken
+    //
+    //                    } catch {
+    //                        completion(.failure(NetworkError.noJSONDecoding))
+    //                    }
+    //                    return
+    //                }
+    //                self?.task = nil
+    //                self?.lastCode = nil
+    //            }
+    //        }
+    //        self.task = task
+    //        task.resume()
+    //    }
     
     func makeOAuthTokenRequest(code: String) -> URLRequest? {
         guard let url = URL(
