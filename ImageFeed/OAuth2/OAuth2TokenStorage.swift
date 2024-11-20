@@ -21,8 +21,3 @@ final class OAuth2TokenStorage {
         }
     }
 }
-//extension OAuth2TokenStorage { // для проверки
-//    func clean() {
-//        KeychainWrapper.standard.removeAllKeys()
-//    }
-//}

@@ -48,39 +48,6 @@ final class OAuth2Service {
         task.resume()
     }
     
-    //  прошлый вариант - удалить как заработает новый
-    //        let task = urlSession.dataTask(with: request) { [weak self] data, response, error in
-    //            DispatchQueue.main.async {
-    //                if let response = response as? HTTPURLResponse, response.statusCode < 200 || response.statusCode >= 300 {
-    //                    completion(.failure(NetworkError.httpStatusCode(response.statusCode)))
-    //                    return
-    //                }
-    //
-    //                if let error {
-    //                    completion(.failure(NetworkError.urlRequestError(error)))
-    //                    return
-    //                }
-    //
-    //                if let data {
-    //                    do {
-    //                        let decoder = JSONDecoder()
-    //                        let response = try decoder.decode(OAuthTokenResponseBody.self, from: data)
-    //                        completion(.success(response.accessToken))
-    //                        self?.oauth2TokenStorage.token = response.accessToken
-    //
-    //                    } catch {
-    //                        completion(.failure(NetworkError.noJSONDecoding))
-    //                    }
-    //                    return
-    //                }
-    //                self?.task = nil
-    //                self?.lastCode = nil
-    //            }
-    //        }
-    //        self.task = task
-    //        task.resume()
-    //    }
-    
     func makeOAuthTokenRequest(code: String) -> URLRequest? {
         guard let url = URL(
             string: "https://unsplash.com"

@@ -48,31 +48,6 @@ final class ProfileService {
         self.task = task
         task.resume()
     }
-    // старая версия - удалить
-    //        let task = URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
-    //            DispatchQueue.main.async {
-    //                if let response = response as? HTTPURLResponse, response.statusCode < 200 || response.statusCode >= 300 {
-    //                    completion(.failure(NetworkError.httpStatusCode(response.statusCode)))
-    //                    return
-    //                }
-    //
-    //                if let error {
-    //                    completion(.failure(NetworkError.urlRequestError(error)))
-    //                    return
-    //                }
-    //
-    //                if let data {
-    //                    do {
-    //                        let decoder = JSONDecoder()
-    //                        let response = try decoder.decode(ProfileResult.self, from: data)
-    //                        let profile = Profile(profileResult: response)
-    //                        self?.profile = profile
-    //                        completion(.success(profile))
-    //                    } catch {
-    //                        completion(.failure(NetworkError.noJSONDecoding))
-    //                    }
-    //                    return
-    //                }
     
     func profileRequest(token: String) -> URLRequest? {
         guard let url = URL(

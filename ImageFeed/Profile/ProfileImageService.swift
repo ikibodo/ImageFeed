@@ -65,44 +65,6 @@ final class ProfileImageService {
         self.task = task
         task.resume()
     }
-    //  прошлый вариант - удалить как заработает новый
-    //        let task = URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
-    //            DispatchQueue.main.async {
-    //                if let response = response as? HTTPURLResponse, response.statusCode < 200 || response.statusCode >= 300 {
-    //                    completion(.failure(NetworkError.httpStatusCode(response.statusCode)))
-    //                    return
-    //                }
-    //                
-    //                if let error {
-    //                    completion(.failure(NetworkError.urlRequestError(error)))
-    //                    return
-    //                }
-    //                
-    //                if let data {
-    //                    do {
-    //                        let decoder = JSONDecoder()
-    //                        let response = try decoder.decode(UserResult.self, from: data)
-    //                        guard let avatarURL = response.profileImage?.small else { return }
-    //                        self?.avatarURL = avatarURL
-    //                        completion(.success(avatarURL))
-    //                        
-    //                        NotificationCenter.default.post(
-    //                                name: ProfileImageService.didChangeNotification,
-    //                                object: self,
-    //                                userInfo: ["URL": avatarURL]
-    //                        )
-    //                    } catch {
-    //                        completion(.failure(NetworkError.noJSONDecoding))
-    //                    }
-    //                    return
-    //                }
-    //                self?.task = nil
-    //                self?.lastToken = nil
-    //            }
-    //        }
-    //        self.task = task
-    //        task.resume()
-    //    }
     
     func profileImageRequest(token: String) -> URLRequest? {
         

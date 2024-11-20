@@ -30,12 +30,10 @@ final class SplashViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-//        OAuth2TokenStorage().clean() // для теста - удалить
         if let token = oauth2TokenStorage.token {
             //  switchToTabBarController()
             self.fetchProfile(token: token)
         } else {
-           // performSegue(withIdentifier: ShowAuthenticationScreenSegueIdentifier, sender: nil)
             guard let authViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "AuthViewController") as? AuthViewController
             else { return }
             authViewController.delegate = self
@@ -73,23 +71,6 @@ final class SplashViewController: UIViewController {
         ])
     }
 }
-
-//extension SplashViewController { // удалить после удаления сплэша из сториборда
-//    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-//        if segue.identifier == ShowAuthenticationScreenSegueIdentifier {
-//            guard
-//                let navigationController = segue.destination as? UINavigationController,
-//                let viewController = navigationController.viewControllers[0] as? AuthViewController
-//            else {
-//                assertionFailure("Failed to prepare for \(ShowAuthenticationScreenSegueIdentifier)")
-//                return
-//            }
-//            viewController.delegate = self
-//        } else {
-//            super.prepare(for: segue, sender: sender)
-//        }
-//    }
-//}
 
 extension SplashViewController: AuthViewControllerDelegate {
     func didAuthenticate(_ vc: AuthViewController, didAuthenticateWithCode code: String) {

@@ -48,7 +48,6 @@ extension URLSession {
     }
 }
 
-
 extension URLSession {
     func objectTask<T: Decodable>(
         for request: URLRequest,
@@ -66,6 +65,7 @@ extension URLSession {
                     completion(.failure(NetworkError.noJSONDecoding))
                 }
             case .failure(let error):
+                print("Данные не получены: \(error.localizedDescription)")
                 completion(.failure(error))
             }
         }
