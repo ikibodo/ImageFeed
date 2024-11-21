@@ -60,7 +60,7 @@ extension AuthViewController: WebViewViewControllerDelegate  {
                 delegate?.didAuthenticate(self, didAuthenticateWithCode: code)
             case.failure(_):
                 print("NL: Ошибка в AuthViewController.webViewViewController")
-                self.showAlert()
+                self.showErrorAlert()
             }
         })
     }
@@ -69,7 +69,7 @@ extension AuthViewController: WebViewViewControllerDelegate  {
         dismiss(animated: true)
     }
     
-    func showAlert() {
+    private func showErrorAlert() {
         let alert = UIAlertController(
             title: "Что-то пошло не так(",
             message: "Не удалось войти в систему",

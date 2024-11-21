@@ -14,7 +14,7 @@ final class SplashViewController: UIViewController {
     private let oauth2TokenStorage = OAuth2TokenStorage()
     private let profileService = ProfileService.shared
     
-    private var splashImageView: UIImageView = {
+    private lazy var splashImageView: UIImageView = {
         let splashImageView = UIImageView()
         splashImageView.image = UIImage(named: "splash_screen_logo")
         splashImageView.translatesAutoresizingMaskIntoConstraints = false
