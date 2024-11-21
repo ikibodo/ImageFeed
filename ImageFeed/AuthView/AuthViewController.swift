@@ -6,9 +6,11 @@
 //
 
 import UIKit
+import ProgressHUD
+
 
 protocol AuthViewControllerDelegate: AnyObject {
-    func authViewController(_ vc: AuthViewController, didAuthenticateWithCode code: String)
+    func didAuthenticate(_ vc: AuthViewController, didAuthenticateWithCode code: String)
 }
 
 final class AuthViewController: UIViewController {
@@ -48,17 +50,35 @@ final class AuthViewController: UIViewController {
 
 extension AuthViewController: WebViewViewControllerDelegate  {
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String) {
-        oauth2Service.fetchOAuthToken(code, completion: { [weak self] result in
+        UIBlockingProgressHUD.show()
+        
+        self.oauth2Service.fetchOAuthToken(code, completion: { [weak self] result in
             guard let self = self else { return }
+            UIBlockingProgressHUD.dismiss()
             switch result {
             case.success (_):
-                delegate?.authViewController(self, didAuthenticateWithCode: code)
+                delegate?.didAuthenticate(self, didAuthenticateWithCode: code)
             case.failure(_):
                 print("NL: Ошибка в AuthViewController.webViewViewController")
+                self.showErrorAlert()
             }
         })
     }
+    
     func webViewViewControllerDidCancel(_ vc: WebViewViewController) {
         dismiss(animated: true)
+    }
+    
+    private func showErrorAlert() {
+        let alert = UIAlertController(
+            title: "Что-то пошло не так(",
+            message: "Не удалось войти в систему",
+            preferredStyle: .alert)
+        
+        let action = UIAlertAction(title: "Ок", style: .default)
+        alert.addAction(action)
+        DispatchQueue.main.async {
+            self.present(alert, animated: true)
+        }
     }
 }

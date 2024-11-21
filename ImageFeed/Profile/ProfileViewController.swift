@@ -4,13 +4,20 @@
 //
 //  Created by N L on 2.10.24..
 //
+import Foundation
 import UIKit
+import Kingfisher
 
 final class ProfileViewController: UIViewController {
+    
+    let token = OAuth2TokenStorage().token
+    private var profileImageServiceObserver: NSObjectProtocol?
+    private let profileService = ProfileService.shared
     
     private var avatarImageView: UIImageView = {
         let avatarImageView = UIImageView()
         avatarImageView.image = UIImage(named: "avatar")
+        avatarImageView.layer.cornerRadius = 61
         avatarImageView.translatesAutoresizingMaskIntoConstraints = false
         return avatarImageView
     }()
@@ -56,6 +63,47 @@ final class ProfileViewController: UIViewController {
         addSubViews()
         addConstraints()
         logoutButton.addTarget(self, action: #selector(didTapLogoutButton), for: .touchUpInside)
+        
+        if let profile = profileService.profile {
+            updateProfileDetails(profile: profile)
+        }
+        
+        if let profile = profileService.profile {
+            nameLabel.text = profile.name
+            loginNameLabel.text = profile.loginName
+            descriptionLabel.text = profile.bio
+        }
+
+        profileImageServiceObserver = NotificationCenter.default.addObserver(
+            forName: ProfileImageService.didChangeNotification,
+            object: nil,
+            queue: .main) { [weak self] _ in
+                guard let self = self else { return }
+                self.updateAvatar()
+            }
+        updateAvatar()
+    }
+    
+    private func updateAvatar() {
+        guard
+            let profileImageURL = ProfileImageService.shared.avatarURL,
+            let url = URL(string: profileImageURL)
+        else { return }
+        let processor = RoundCornerImageProcessor(cornerRadius: 61)
+        avatarImageView.kf.indicatorType = .activity
+        avatarImageView.kf.setImage(with: url,
+                                    placeholder: UIImage(named: "avatar_placeholder"),
+                                    options: [.processor(processor)]
+        )
+        let cache = ImageCache.default
+        cache.clearMemoryCache()
+        cache.clearDiskCache()
+    }
+    
+    private func updateProfileDetails(profile: Profile) {
+        nameLabel.text = profile.name
+        loginNameLabel.text = profile.loginName
+        descriptionLabel.text = profile.bio
     }
     
     private func addSubViews() {
