@@ -9,9 +9,13 @@
 import UIKit
 import Kingfisher
 
+protocol ImagesListCellDelegate: AnyObject {
+    func imageListCellDidTapLike(_ cell: ImagesListCell)
+}
+
 final class ImagesListCell: UITableViewCell {
     static let reuseIdentifier = "ImagesListCell"
-    
+    weak var delegate: ImagesListCellDelegate?
     
     
     @IBOutlet weak var cellImage: UIImageView!
@@ -25,4 +29,15 @@ final class ImagesListCell: UITableViewCell {
         cellImage.kf.cancelDownloadTask()
         cellImage.image = UIImage(named: "photo_placeholder")
         }
+    
+    
+    
+    @IBAction private func likeButtonClicked() {
+        delegate?.imageListCellDidTapLike(self)
+    }
+    
+    func setIsLiked(_ isLiked: Bool) {
+        let image = isLiked ? UIImage(named: "like_button_on") : UIImage(named: "like_button_off")
+        likeButton.setImage(image, for: .normal)
+    }
 }

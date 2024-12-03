@@ -8,11 +8,7 @@
 import UIKit
 import Kingfisher
 
-final class ImagesListViewController: UIViewController {
-    
-    @IBOutlet private weak var tableView: UITableView!
-    
-    //    private let photosName: [String] = Array(0..<20).map{ "\($0)" } // удалить это мок
+final class ImagesListViewController: UIViewController, ImagesListCellDelegate {
     
     private let showSingleImageSegueIdentifier = "ShowSingleImage"
     private let imagesListService = ImagesListService.shared
@@ -27,6 +23,10 @@ final class ImagesListViewController: UIViewController {
         formatter.timeStyle = .none
         return formatter
     }()
+    
+    @IBOutlet private weak var tableView: UITableView!
+    
+    //    private let photosName: [String] = Array(0..<20).map{ "\($0)" } // удалить это мок
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -64,6 +64,28 @@ final class ImagesListViewController: UIViewController {
         }
     }
     
+    func imageListCellDidTapLike(_ cell: ImagesListCell) {
+        guard let indexPath = tableView.indexPath(for: cell) else { return }
+        let photo = photos[indexPath.row]
+        // Покажем лоадер
+       UIBlockingProgressHUD.show()
+       imagesListService.changeLike(photoId: photo.id, isLike: !photo.isLiked) { result in
+          switch result {
+          case .success:
+             // Синхронизируем массив картинок с сервисом
+             self.photos = self.imagesListService.photos
+             // Изменим индикацию лайка картинки
+              cell.setIsLiked(self.photos[indexPath.row].isLiked)
+             // Уберём лоадер
+             UIBlockingProgressHUD.dismiss()
+          case .failure:
+             // Уберём лоадер
+             UIBlockingProgressHUD.dismiss()
+              self.showLikeErrorAlert()
+             }
+          }
+    }
+    
     private func loadPhotos() {
         imagesListService.fetchPhotosNextPage { _ in }
     }
@@ -80,6 +102,20 @@ final class ImagesListViewController: UIViewController {
             }  completion: { _ in }
         }
     }
+    
+    private func showLikeErrorAlert() {
+        let alert = UIAlertController(
+            title: "Что-то пошло не так(",
+            message: "Не удалось поставить лайк",
+            preferredStyle: .alert)
+        
+        let action = UIAlertAction(title: "Ок", style: .default)
+        alert.addAction(action)
+        DispatchQueue.main.async {
+            self.present(alert, animated: true)
+        }
+    }
+    
 }
 
 extension ImagesListViewController {
@@ -100,7 +136,7 @@ extension ImagesListViewController {
             guard let self = self else { return }
             self.tableView.reloadRows(at: [indexPath], with: .automatic)
         }
-        
+        cell.delegate = self
         if let date = photo.createdAt {
             cell.dateLabel.text = dateFormatter.string(from: date)
         } else {
@@ -141,6 +177,7 @@ extension ImagesListViewController: UITableViewDataSource {
         guard let imageListCell = tableView.dequeueReusableCell(withIdentifier: ImagesListCell.reuseIdentifier, for: indexPath) as? ImagesListCell else {
             return UITableViewCell()
         }
+        imageListCell.delegate = self
         configCell(for: imageListCell, with: indexPath)
         return imageListCell
     }
