@@ -6,14 +6,18 @@
 //
 
 import UIKit
+import Kingfisher
 
 final class ImagesListViewController: UIViewController {
     
     @IBOutlet private weak var tableView: UITableView!
     
-    private let photosName: [String] = Array(0..<20).map{ "\($0)" }
+    //    private let photosName: [String] = Array(0..<20).map{ "\($0)" } // удалить это мок
     
     private let showSingleImageSegueIdentifier = "ShowSingleImage"
+    private let imagesListService = ImagesListService.shared
+    private var imagesListServiceObserver: NSObjectProtocol?
+    var photos: [Photo] = []
     
     private let currentDate = Date()
     
@@ -26,11 +30,19 @@ final class ImagesListViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        loadPhotos()
         tableView.delegate = self
         tableView.dataSource = self
         
         tableView.contentInset = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
+        
+        imagesListServiceObserver = NotificationCenter.default.addObserver(
+            forName: ImagesListService.didChangeNotification,
+            object: nil,
+            queue: .main) { [weak self] _ in
+                guard let self = self else { return }
+                updateTableViewAnimated()
+            }
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -43,23 +55,57 @@ final class ImagesListViewController: UIViewController {
                 return
             }
             
-            let image = UIImage(named: photosName[indexPath.row])
-            viewController.image = image
+            if let url = imagesListService.photos[indexPath.row].largeImageURL,
+              let imageURL = URL(string: url) {
+//                viewController.imageURL = imageURL // TODO разобраться почему не работает
+            }
         } else {
             super.prepare(for: segue, sender: sender)
         }
     }
     
+    private func loadPhotos() {
+        imagesListService.fetchPhotosNextPage { _ in }
+    }
+    
+    private func updateTableViewAnimated() {
+        let oldCount = photos.count
+        let newCount = imagesListService.photos.count
+        photos = imagesListService.photos
+        if oldCount != newCount {
+            tableView.performBatchUpdates {
+                let indexPaths = (oldCount..<newCount).map { i in
+                    IndexPath(row: i, section: 0) }
+                tableView.insertRows(at: indexPaths, with: .automatic)
+            }  completion: { _ in }
+        }
+    }
 }
 
 extension ImagesListViewController {
     func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
-        guard let image = UIImage(named: photosName[indexPath.row]) else {
-            return
+        //        guard let image = UIImage(named: photosName[indexPath.row]) else {//photo//photo
+        //            return
+        //        } // обратиться к сервесу и получить иззображения
+        //        cell.cellImage.image = image
+        
+        let photo = photos[indexPath.row]
+        guard
+            let url = photo.thumbImageURL,
+            let photoUrl = URL(string: url)
+        else { return }
+        cell.cellImage.kf.indicatorType = .activity
+        cell.cellImage.kf.setImage(with: photoUrl,
+                                   placeholder: UIImage(named: "photo_placeholder")) { [weak self] _ in
+            guard let self = self else { return }
+            self.tableView.reloadRows(at: [indexPath], with: .automatic)
         }
         
-        cell.cellImage.image = image
-        cell.dateLabel.text = dateFormatter.string(from: currentDate)
+        if let date = photo.createdAt {
+            cell.dateLabel.text = dateFormatter.string(from: date)
+        } else {
+            cell.dateLabel.text = "No date"
+        }
         
         let isLiked = indexPath.row % 2 == 0
         let likeImage = isLiked ? UIImage(named: "like_button_on") : UIImage(named: "like_button_off")
@@ -73,28 +119,36 @@ extension ImagesListViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        guard let image = UIImage(named: photosName[indexPath.row]) else { return 0 }
-        
-        let imageInsets = UIEdgeInsets(top: 4, left: 16, bottom: 4, right: 16)
-        let imageViewWidth = tableView.bounds.width - imageInsets.left - imageInsets.right
-        let imageWidth = image.size.width
-        let scale = imageViewWidth / imageWidth
-        let cellHeight = image.size.height * scale + imageInsets.top + imageInsets.bottom
-        return cellHeight
+        //        guard let image = UIImage(named: photosName[indexPath.row]) else { return 0 } //photo
+        //
+        //        let imageInsets = UIEdgeInsets(top: 4, left: 16, bottom: 4, right: 16)
+        //        let imageViewWidth = tableView.bounds.width - imageInsets.left - imageInsets.right
+        //        let imageWidth = image.size.width
+        //        let scale = imageViewWidth / imageWidth
+        //        let cellHeight = image.size.height * scale + imageInsets.top + imageInsets.bottom
+        //        return cellHeight
+        return 200
     }
 }
 
 extension ImagesListViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return photosName.count
+        return photos.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
+        // в методе tableView(_:, cellForRowAt:) с помощью Kingfisher передавать url для thumbnail фото - но я его получаю в func configCell - хз зачем его переносить сюда
         guard let imageListCell = tableView.dequeueReusableCell(withIdentifier: ImagesListCell.reuseIdentifier, for: indexPath) as? ImagesListCell else {
             return UITableViewCell()
         }
         configCell(for: imageListCell, with: indexPath)
         return imageListCell
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        // В этом методе можно проверить условие indexPath.row + 1 == photos.count, и если оно верно — вызывать fetchPhotosNextPage().
+        if indexPath.row + 1 == imagesListService.photos.count {
+            imagesListService.fetchPhotosNextPage{ _ in }
+        }
     }
 }
