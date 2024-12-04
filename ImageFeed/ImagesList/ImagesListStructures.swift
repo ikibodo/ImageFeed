@@ -21,7 +21,18 @@ struct PhotoResult: Codable {
     let urls: UrlsResult
     
     private enum CodingKeys: String, CodingKey {
-        case id, createdAt, updatedAt, width, height, color, blurHash, downloads, likes, likedByUser, description, urls = "urls"
+        case id = "id"
+        case createdAt = "created_at"
+        case updatedAt = "updated_at"
+        case width = "width"
+        case height = "height"
+        case color = "color"
+        case blurHash = "blur_hash"
+        case downloads = "downloads"
+        case likes = "likes"
+        case likedByUser = "liked_by_user"
+        case description = "description"
+        case urls = "urls"
     }
 }
 struct UrlsResult: Codable {
@@ -32,7 +43,11 @@ struct UrlsResult: Codable {
     let thumb: String?  
     
     private enum CodingKeys: String, CodingKey {
-        case raw, full, regular, small, thumb
+        case raw = "raw"
+        case full = "full"
+        case regular = "regular"
+        case small = "small"
+        case thumb = "thumb"
     }
 }
 
@@ -44,14 +59,4 @@ struct Photo {
     let thumbImageURL: String?
     let largeImageURL: String?
     let isLiked: Bool
-    
-//    init(photoResult: PhotoResult) {
-//        self.id = photoResult.id
-//        self.size = CGSize(width: photoResult.width, height: photoResult.height)
-//        self.createdAt = ISO8601DateFormatter().date(from: photoResult.createdAt ?? "")
-//        self.welcomeDescription = photoResult.description
-//        self.thumbImageURL = photoResult.urls.thumb
-//        self.largeImageURL = photoResult.urls.full
-//        self.isLiked = photoResult.likedByUser
-//    }
 }

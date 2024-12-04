@@ -37,6 +37,7 @@ final class OAuth2Service {
             case .success(let data):
                 completion(.success(data.accessToken))
                 self?.oauth2TokenStorage.token = data.accessToken
+                print("TOKEN  \(data.accessToken)")
             case .failure(let error):
                 print("NL: Ошибка декодирования в OAuth2Service")
                 completion(.failure(error))

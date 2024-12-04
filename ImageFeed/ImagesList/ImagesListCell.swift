@@ -25,9 +25,7 @@ final class ImagesListCell: UITableViewCell {
     
     override func prepareForReuse() {
             super.prepareForReuse()
-            // Отменяем загрузку, чтобы избежать багов при переиспользовании ячеек
         cellImage.kf.cancelDownloadTask()
-        cellImage.image = UIImage(named: "photo_placeholder")
         }
     
     
@@ -38,6 +36,9 @@ final class ImagesListCell: UITableViewCell {
     
     func setIsLiked(_ isLiked: Bool) {
         let image = isLiked ? UIImage(named: "like_button_on") : UIImage(named: "like_button_off")
-        likeButton.setImage(image, for: .normal)
+        DispatchQueue.main.async { [weak self] in
+                    guard let self else {return}
+                    self.likeButton.setImage(image, for: .normal)
+                }
     }
 }

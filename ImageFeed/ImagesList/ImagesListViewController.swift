@@ -33,7 +33,7 @@ final class ImagesListViewController: UIViewController, ImagesListCellDelegate {
         loadPhotos()
         tableView.delegate = self
         tableView.dataSource = self
-        
+//        tableView.rowHeight = 200
         tableView.contentInset = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
         
         imagesListServiceObserver = NotificationCenter.default.addObserver(
@@ -41,7 +41,7 @@ final class ImagesListViewController: UIViewController, ImagesListCellDelegate {
             object: nil,
             queue: .main) { [weak self] _ in
                 guard let self = self else { return }
-                updateTableViewAnimated()
+                self.updateTableViewAnimated()
             }
     }
     
@@ -67,19 +67,15 @@ final class ImagesListViewController: UIViewController, ImagesListCellDelegate {
     func imageListCellDidTapLike(_ cell: ImagesListCell) {
         guard let indexPath = tableView.indexPath(for: cell) else { return }
         let photo = photos[indexPath.row]
-        // Покажем лоадер
        UIBlockingProgressHUD.show()
-       imagesListService.changeLike(photoId: photo.id, isLike: !photo.isLiked) { result in
+       imagesListService.changeLike(photoId: photo.id, isLike: !photo.isLiked) { [weak self] result in
+           guard let self = self else { return }
           switch result {
           case .success:
-             // Синхронизируем массив картинок с сервисом
              self.photos = self.imagesListService.photos
-             // Изменим индикацию лайка картинки
               cell.setIsLiked(self.photos[indexPath.row].isLiked)
-             // Уберём лоадер
              UIBlockingProgressHUD.dismiss()
           case .failure:
-             // Уберём лоадер
              UIBlockingProgressHUD.dismiss()
               self.showLikeErrorAlert()
              }
@@ -120,14 +116,9 @@ final class ImagesListViewController: UIViewController, ImagesListCellDelegate {
 
 extension ImagesListViewController {
     func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
-        //        guard let image = UIImage(named: photosName[indexPath.row]) else {//photo//photo
-        //            return
-        //        } // обратиться к сервесу и получить иззображения
-        //        cell.cellImage.image = image
-        
-        let photo = photos[indexPath.row]
-        guard
-            let url = photo.thumbImageURL,
+        cell.delegate = self
+        let photoURL = photos[indexPath.row]
+        guard let url = photoURL.thumbImageURL,
             let photoUrl = URL(string: url)
         else { return }
         cell.cellImage.kf.indicatorType = .activity
@@ -136,34 +127,34 @@ extension ImagesListViewController {
             guard let self = self else { return }
             self.tableView.reloadRows(at: [indexPath], with: .automatic)
         }
-        cell.delegate = self
-        if let date = photo.createdAt {
+        if let date = photoURL.createdAt {
             cell.dateLabel.text = dateFormatter.string(from: date)
         } else {
             cell.dateLabel.text = "No date"
         }
-        
-        let isLiked = indexPath.row % 2 == 0
-        let likeImage = isLiked ? UIImage(named: "like_button_on") : UIImage(named: "like_button_off")
-        cell.likeButton.setImage(likeImage, for: .normal)
+        cell.setIsLiked(photoURL.isLiked)
+//        let isLiked = indexPath.row % 2 == 0
+//        let likeImage = isLiked ? UIImage(named: "like_button_on") : UIImage(named: "like_button_off")
+//        cell.likeButton.setImage(likeImage, for: .normal)
     }
 }
 
 extension ImagesListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         performSegue(withIdentifier: showSingleImageSegueIdentifier, sender: indexPath)
+        tableView.deselectRow(at: indexPath, animated: true)
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        //        guard let image = UIImage(named: photosName[indexPath.row]) else { return 0 } //photo
-        //
-        //        let imageInsets = UIEdgeInsets(top: 4, left: 16, bottom: 4, right: 16)
-        //        let imageViewWidth = tableView.bounds.width - imageInsets.left - imageInsets.right
-        //        let imageWidth = image.size.width
-        //        let scale = imageViewWidth / imageWidth
-        //        let cellHeight = image.size.height * scale + imageInsets.top + imageInsets.bottom
-        //        return cellHeight
-        return 200
+//        return UITableView.automaticDimension
+        let imageSize = photos[indexPath.row].size
+        let imageInsets = UIEdgeInsets(top: 4, left: 16, bottom: 4, right: 16)
+        let imageViewWidth = tableView.bounds.width - imageInsets.left - imageInsets.right
+        let imageWidth = imageSize.width
+        let imageHeight = imageSize.height
+        let scale = imageViewWidth / imageWidth
+        let cellHeight = imageHeight * scale + imageInsets.top + imageInsets.bottom
+        return cellHeight
     }
 }
 
@@ -173,7 +164,6 @@ extension ImagesListViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        // в методе tableView(_:, cellForRowAt:) с помощью Kingfisher передавать url для thumbnail фото - но я его получаю в func configCell - хз зачем его переносить сюда
         guard let imageListCell = tableView.dequeueReusableCell(withIdentifier: ImagesListCell.reuseIdentifier, for: indexPath) as? ImagesListCell else {
             return UITableViewCell()
         }
@@ -183,9 +173,8 @@ extension ImagesListViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        // В этом методе можно проверить условие indexPath.row + 1 == photos.count, и если оно верно — вызывать fetchPhotosNextPage().
         if indexPath.row + 1 == imagesListService.photos.count {
-            imagesListService.fetchPhotosNextPage{ _ in }
+            imagesListService.fetchPhotosNextPage { _ in }
         }
     }
 }

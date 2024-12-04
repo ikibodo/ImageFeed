@@ -19,6 +19,7 @@ final class ImagesListService {
     
     private init() {}
     
+    
     func fetchPhotosNextPage(_ completion: @escaping (Result<String, Error>) -> Void) {
         assert(Thread.isMainThread)
         
@@ -38,7 +39,7 @@ final class ImagesListService {
         
         let nextPage = (lastLoadedPage ?? 0) + 1
         
-        guard let request = photosRequest(token: token, page: nextPage, perPage: 10)
+        guard let request = photosRequest(token: token, page: nextPage)
         else {
             print("\(NetworkError.invalidRequest)")
             completion(.failure(NetworkError.invalidRequest))
@@ -46,18 +47,11 @@ final class ImagesListService {
         }
         
         let task = urlSession.objectTask(for: request) { [weak self] (result: Result<[PhotoResult], Error>) in
+            guard let self else { return }
+            DispatchQueue.main.async {
             switch result {
             case .success(let data):
-                guard let self else { return }
-                let photo = data.map(self.updatePhoto)
-                DispatchQueue.main.async {
-                    self.photos.append(contentsOf: photo)
-                }
-//              for data in data { // еще одно решение и тоже не работает
-//              self.photos.append(self.updatePhoto(data)) }
-//              let photo = data.map {photoResult in // еще одно решение через инит (закомичен) и тоже не работает у меня
-//              Photo(photoResult: photoResult)}
-//              self.photos.append(contentsOf: photo)
+                    self.photos.append(contentsOf: data.map(self.updatePhoto))
                 self.lastLoadedPage = nextPage
                 NotificationCenter.default.post(
                     name: ImagesListService.didChangeNotification,
@@ -67,7 +61,8 @@ final class ImagesListService {
                 print("NL: Ошибка декодирования photo в ImagesListService")
                 completion(.failure(error))
             }
-            self?.task = nil
+            }
+            self.task = nil
         }
         self.task = task
         task.resume()
@@ -100,11 +95,8 @@ final class ImagesListService {
             case .success(let data):
                 guard let self else { return }
                 DispatchQueue.main.async {
-                    // Поиск индекса элемента
                     if let index = self.photos.firstIndex(where: { $0.id == photoId }) {
-                        // Текущий элемент
                         let photo = self.photos[index]
-                        // Копия элемента с инвертированным значением isLiked.
                         let newPhoto = Photo(
                             id: photo.id,
                             size: photo.size,
@@ -114,7 +106,6 @@ final class ImagesListService {
                             largeImageURL: photo.largeImageURL,
                             isLiked: !photo.isLiked
                         )
-                        // Заменяем элемент в массиве.
                         self.photos [index] = newPhoto
                     }
                 }
@@ -141,7 +132,7 @@ final class ImagesListService {
 }
 
 extension ImagesListService {
-    private func photosRequest(token: String, page: Int, perPage: Int) -> URLRequest? {
+    private func photosRequest(token: String, page: Int) -> URLRequest? {
         guard let url = URL(
             string: "https://api.unsplash.com"
             + "/photos?page=\(page)"
