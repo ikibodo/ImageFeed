@@ -70,7 +70,7 @@ extension SingleImageViewController: UIGestureRecognizerDelegate {
                               options: [
                                 .processor(processor)
                               ]
-                              
+        
         ) { [weak self] result in
             UIBlockingProgressHUD.dismiss()
             guard let self = self else { return }
@@ -82,7 +82,7 @@ extension SingleImageViewController: UIGestureRecognizerDelegate {
                 self.showErrorAlert()
             }
         }
-    }
+        
     }
     
     private func showErrorAlert() {
