@@ -17,6 +17,45 @@ final class SingleImageViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupPhoto()
+        scrollView.minimumZoomScale = 0.1
+        scrollView.maximumZoomScale = 1.25
+    }
+    
+    private func setupPhoto() {
+        guard let imageURL = imageURL else {
+            print("SingleImageViewController: imageURL is nil")
+            return
+        }
+        UIBlockingProgressHUD.show()
+        let processor = DownsamplingImageProcessor(size: imageView.frame.size)
+        imageView.kf.setImage(with: imageURL,
+                              options: [
+                                .processor(processor)
+                              ]
+                              
+        ) { [weak self] result in
+            UIBlockingProgressHUD.dismiss()
+            guard let self = self else { return }
+            switch result {
+            case .success(let imageResult):
+                self.rescaleAndCenterImageInScrollView(image: imageResult.image)
+            case .failure(let error):
+                print("SingleImageViewController - фото не загрузилось.\(error)")
+                self.showErrorAlert()
+            }
+        }
+    }
+    
+    private func showErrorAlert() {
+        let alert = UIAlertController(
+            title: "Что-то пошло не так",
+            message: "Попробовать ещё раз?",
+            preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Не надо", style: .default))
+        alert.addAction(UIAlertAction(title: "Повторить", style: .default) { action in
+            self.setupPhoto()
+        })
+        self.present(alert, animated: true)
     }
     
     private func rescaleAndCenterImageInScrollView(image: UIImage) {
@@ -34,7 +73,6 @@ final class SingleImageViewController: UIViewController {
         let x = (newContentSize.width - visibleRectSize.width) / 2
         let y = (newContentSize.height - visibleRectSize.height) / 2
         scrollView.setContentOffset(CGPoint(x: x, y: y), animated: false)
-        
     }
     
     @IBAction private func didTapBackButton(_ sender: Any) {
@@ -54,46 +92,5 @@ final class SingleImageViewController: UIViewController {
 extension SingleImageViewController: UIScrollViewDelegate {
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         return imageView
-    }
-}
-
-extension SingleImageViewController: UIGestureRecognizerDelegate {
-    
-    private func setupPhoto() {
-        guard let imageURL = imageURL else {
-            print("Ошибка: SingleImageViewController: imageURL is nil")
-            return
-        }
-        UIBlockingProgressHUD.show()
-        let processor = DownsamplingImageProcessor(size: imageView.frame.size)
-        imageView.kf.setImage(with: imageURL,
-                              options: [
-                                .processor(processor)
-                              ]
-        
-        ) { [weak self] result in
-            UIBlockingProgressHUD.dismiss()
-            guard let self = self else { return }
-            switch result {
-            case .success(let imageResult):
-                self.rescaleAndCenterImageInScrollView(image: imageResult.image)
-            case .failure(let error):
-                print("SingleImageViewController - фото не загрузилось.\(error)")
-                self.showErrorAlert()
-            }
-        }
-        
-    }
-    
-    private func showErrorAlert() {
-        let alert = UIAlertController(
-            title: "Что-то пошло не так",
-            message: "Попробовать ещё раз?",
-            preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "Не надо", style: .default))
-        alert.addAction(UIAlertAction(title: "Повторить", style: .default) { action in
-            self.setupPhoto()
-        })
-        self.present(alert, animated: true)
     }
 }

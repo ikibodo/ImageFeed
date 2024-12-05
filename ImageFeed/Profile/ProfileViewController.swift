@@ -74,7 +74,7 @@ final class ProfileViewController: UIViewController {
             loginNameLabel.text = profile.loginName
             descriptionLabel.text = profile.bio
         }
-
+        
         profileImageServiceObserver = NotificationCenter.default.addObserver(
             forName: ProfileImageService.didChangeNotification,
             object: nil,
@@ -134,8 +134,21 @@ final class ProfileViewController: UIViewController {
     
     @objc
     private func didTapLogoutButton() {
-        profileLogoutService.logout()
-        guard let window = UIApplication.shared.windows.first else { return }
-        window.rootViewController = SplashViewController()
+        self.showLogoutAlert()
+        
+    }
+    
+    private func showLogoutAlert() {
+        let alert = UIAlertController(
+            title: "Пока, пока!",
+            message: "Уверены что хотите выйти?",
+            preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Нет", style: .default))
+        alert.addAction(UIAlertAction(title: "Да", style: .default) { action in
+            self.profileLogoutService.logout()
+            guard let window = UIApplication.shared.windows.first else { return }
+            window.rootViewController = SplashViewController()
+        })
+        self.present(alert, animated: true)
     }
 }
