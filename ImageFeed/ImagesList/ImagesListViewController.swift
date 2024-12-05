@@ -26,8 +26,6 @@ final class ImagesListViewController: UIViewController, ImagesListCellDelegate {
     
     @IBOutlet private weak var tableView: UITableView!
     
-    //    private let photosName: [String] = Array(0..<20).map{ "\($0)" } // удалить это мок
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         loadPhotos()
@@ -57,7 +55,7 @@ final class ImagesListViewController: UIViewController, ImagesListCellDelegate {
             
             if let url = imagesListService.photos[indexPath.row].largeImageURL,
               let imageURL = URL(string: url) {
-//                viewController.imageURL = imageURL // TODO разобраться почему не работает
+                viewController.imageURL = imageURL
             }
         } else {
             super.prepare(for: segue, sender: sender)
@@ -90,12 +88,11 @@ final class ImagesListViewController: UIViewController, ImagesListCellDelegate {
         let oldCount = photos.count
         let newCount = imagesListService.photos.count
         photos = imagesListService.photos
-        if oldCount != newCount {
-            tableView.performBatchUpdates {
-                let indexPaths = (oldCount..<newCount).map { i in
-                    IndexPath(row: i, section: 0) }
-                tableView.insertRows(at: indexPaths, with: .automatic)
-            }  completion: { _ in }
+        if oldCount == newCount {return}
+        tableView.performBatchUpdates {
+            let indexPaths = (oldCount..<newCount).map { i in
+                IndexPath(row: i, section: 0) }
+            tableView.insertRows(at: indexPaths, with: .automatic)
         }
     }
     
@@ -123,7 +120,7 @@ extension ImagesListViewController {
         else { return }
         cell.cellImage.kf.indicatorType = .activity
         cell.cellImage.kf.setImage(with: photoUrl,
-                                   placeholder: UIImage(named: "photo_placeholder")) { [weak self] _ in
+                                   placeholder: UIImage(named: "photos_placeholder")) { [weak self] _ in
             guard let self = self else { return }
             self.tableView.reloadRows(at: [indexPath], with: .automatic)
         }
@@ -133,9 +130,6 @@ extension ImagesListViewController {
             cell.dateLabel.text = "No date"
         }
         cell.setIsLiked(photoURL.isLiked)
-//        let isLiked = indexPath.row % 2 == 0
-//        let likeImage = isLiked ? UIImage(named: "like_button_on") : UIImage(named: "like_button_off")
-//        cell.likeButton.setImage(likeImage, for: .normal)
     }
 }
 
@@ -173,8 +167,8 @@ extension ImagesListViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        if indexPath.row + 1 == imagesListService.photos.count {
-            imagesListService.fetchPhotosNextPage { _ in }
+        if (indexPath.row + 1) == imagesListService.photos.count {
+            loadPhotos()
         }
     }
 }

@@ -90,7 +90,7 @@ final class ImagesListService {
             completion(.failure(NetworkError.invalidRequest))
             return
         }
-        let task = urlSession.objectTask(for: request) { [weak self] (result: Result<[UrlsResult], Error>) in
+        let task = urlSession.objectTask(for: request) { [weak self] (result: Result<[PhotoResult], Error>) in
             switch result {
             case .success(let data):
                 guard let self else { return }
@@ -106,7 +106,7 @@ final class ImagesListService {
                             largeImageURL: photo.largeImageURL,
                             isLiked: !photo.isLiked
                         )
-                        self.photos [index] = newPhoto
+                        self.photos[index] = newPhoto
                     }
                 }
                 completion(.success(()))
