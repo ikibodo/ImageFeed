@@ -88,3 +88,10 @@ final class ProfileImageService {
         return request
     }
 }
+
+extension ProfileImageService {
+    func cleanSession() {
+        avatarURL = nil
+        task = nil
+    }
+}

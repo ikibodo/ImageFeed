@@ -156,3 +156,11 @@ extension ImagesListService {
         return request
     }
 }
+
+extension ImagesListService {
+    func cleanSession() {
+        lastLoadedPage = nil
+        photos = []
+        task = nil
+    }
+}

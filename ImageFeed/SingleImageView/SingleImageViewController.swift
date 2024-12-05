@@ -17,8 +17,6 @@ final class SingleImageViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupPhoto()
-        scrollView.minimumZoomScale = 0.1
-        scrollView.maximumZoomScale = 1.25
     }
     
     private func rescaleAndCenterImageInScrollView(image: UIImage) {
@@ -36,6 +34,7 @@ final class SingleImageViewController: UIViewController {
         let x = (newContentSize.width - visibleRectSize.width) / 2
         let y = (newContentSize.height - visibleRectSize.height) / 2
         scrollView.setContentOffset(CGPoint(x: x, y: y), animated: false)
+        
     }
     
     @IBAction private func didTapBackButton(_ sender: Any) {
@@ -59,6 +58,7 @@ extension SingleImageViewController: UIScrollViewDelegate {
 }
 
 extension SingleImageViewController: UIGestureRecognizerDelegate {
+    
     private func setupPhoto() {
         guard let imageURL = imageURL else {
             print("Ошибка: SingleImageViewController: imageURL is nil")
@@ -70,7 +70,7 @@ extension SingleImageViewController: UIGestureRecognizerDelegate {
                               options: [
                                 .processor(processor)
                               ]
-        
+                              
         ) { [weak self] result in
             UIBlockingProgressHUD.dismiss()
             guard let self = self else { return }
@@ -82,6 +82,7 @@ extension SingleImageViewController: UIGestureRecognizerDelegate {
                 self.showErrorAlert()
             }
         }
+    }
     }
     
     private func showErrorAlert() {

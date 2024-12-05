@@ -13,6 +13,7 @@ final class ProfileViewController: UIViewController {
     let token = OAuth2TokenStorage().token
     private var profileImageServiceObserver: NSObjectProtocol?
     private let profileService = ProfileService.shared
+    private let profileLogoutService = ProfileLogoutService.shared
     
     private var avatarImageView: UIImageView = {
         let avatarImageView = UIImageView()
@@ -133,6 +134,8 @@ final class ProfileViewController: UIViewController {
     
     @objc
     private func didTapLogoutButton() {
-        // TODO: - Добавить логику при нажатии на кнопку exit
+        profileLogoutService.logout()
+        guard let window = UIApplication.shared.windows.first else { return }
+        window.rootViewController = SplashViewController()
     }
 }
