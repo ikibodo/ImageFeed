@@ -40,7 +40,7 @@ final class ProfileService {
                 self?.profile = profile
                 completion(.success(profile))
             case .failure(let error):
-                print("NL: Ошибка декодирования в ProfileService")
+                print("Ошибка декодирования в ProfileService\(error)")
                 completion(.failure(error))
             }
             self?.task = nil
@@ -55,7 +55,7 @@ final class ProfileService {
             + "/me"
         )
         else {
-            print("NL: profileRequest failed")
+            print("Ошибка: profileRequest failed")
             return nil
         }
         var request = URLRequest(url: url)

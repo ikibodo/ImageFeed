@@ -40,7 +40,7 @@ struct UrlsResult: Codable {
     let full: String?
     let regular: String
     let small: String
-    let thumb: String?  
+    let thumb: String?
     
     private enum CodingKeys: String, CodingKey {
         case raw = "raw"
@@ -59,4 +59,8 @@ struct Photo {
     let thumbImageURL: String?
     let largeImageURL: String?
     let isLiked: Bool
+}
+
+struct LikeResult: Codable {
+    let photo: PhotoResult?
 }

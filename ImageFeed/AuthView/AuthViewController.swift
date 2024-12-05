@@ -58,8 +58,8 @@ extension AuthViewController: WebViewViewControllerDelegate  {
             switch result {
             case.success (_):
                 delegate?.didAuthenticate(self, didAuthenticateWithCode: code)
-            case.failure(_):
-                print("NL: Ошибка в AuthViewController.webViewViewController")
+            case.failure(let error):
+                print("Ошибка в AuthViewController.webViewViewController\(error)")
                 self.showErrorAlert()
             }
         })

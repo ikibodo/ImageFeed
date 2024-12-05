@@ -26,7 +26,7 @@ final class ProfileImageService {
         assert(Thread.isMainThread)
         
         guard let token = oauth2TokenStorage.token else {
-            print("NL: no token in fetchProfileImageURL")
+            print("Ошибка: no token in fetchProfileImageURL")
             completion(.failure(NetworkError.invalidRequest))
             return
         }
@@ -57,7 +57,7 @@ final class ProfileImageService {
                     userInfo: ["URL": avatarURL]
                 )
             case .failure(let error):
-                print("NL: Ошибка декодирования в ProfileImageService")
+                print("Ошибка декодирования в ProfileImageService\(error)")
                 completion(.failure(error))
             }
             self?.task = nil
@@ -69,7 +69,7 @@ final class ProfileImageService {
     func profileImageRequest(token: String) -> URLRequest? {
         
         guard let userName = profileService.profile?.username else {
-            print("NL: profileImageRequest failed")
+            print("Ошибка: profileImageRequest failed")
             return nil
         }
         
@@ -78,7 +78,7 @@ final class ProfileImageService {
             + "/users/\(userName)"
         )
         else {
-            print("NL: profileImageRequest URL failed")
+            print("Ошибка: profileImageRequest URL failed")
             return nil
         }
         

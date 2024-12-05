@@ -61,7 +61,7 @@ extension SingleImageViewController: UIScrollViewDelegate {
 extension SingleImageViewController: UIGestureRecognizerDelegate {
     private func setupPhoto() {
         guard let imageURL = imageURL else {
-            print("NL: SingleImageViewController: imageURL is nil")
+            print("Ошибка: SingleImageViewController: imageURL is nil")
             return
         }
         UIBlockingProgressHUD.show()

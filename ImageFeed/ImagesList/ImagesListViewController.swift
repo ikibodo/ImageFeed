@@ -52,8 +52,8 @@ final class ImagesListViewController: UIViewController, ImagesListCellDelegate {
                 assertionFailure("Invalid segue destination")
                 return
             }
-            
-            if let url = imagesListService.photos[indexPath.row].largeImageURL,
+//            if let url = imagesListService.photos[indexPath.row].largeImageURL,
+            if let url = photos[indexPath.row].largeImageURL,
               let imageURL = URL(string: url) {
                 viewController.imageURL = imageURL
             }
@@ -73,7 +73,8 @@ final class ImagesListViewController: UIViewController, ImagesListCellDelegate {
              self.photos = self.imagesListService.photos
               cell.setIsLiked(self.photos[indexPath.row].isLiked)
              UIBlockingProgressHUD.dismiss()
-          case .failure:
+          case .failure(let error):
+              print("ImagesListViewController - нет лайков: \(error)")
              UIBlockingProgressHUD.dismiss()
               self.showLikeErrorAlert()
              }
@@ -87,12 +88,13 @@ final class ImagesListViewController: UIViewController, ImagesListCellDelegate {
     private func updateTableViewAnimated() {
         let oldCount = photos.count
         let newCount = imagesListService.photos.count
-        photos = imagesListService.photos
+//        photos = imagesListService.photos
         if oldCount == newCount {return}
         tableView.performBatchUpdates {
             let indexPaths = (oldCount..<newCount).map { i in
                 IndexPath(row: i, section: 0) }
             tableView.insertRows(at: indexPaths, with: .automatic)
+            photos = imagesListService.photos
         }
     }
     
@@ -167,7 +169,7 @@ extension ImagesListViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        if (indexPath.row + 1) == imagesListService.photos.count {
+        if (indexPath.row + 1) == photos.count {
             loadPhotos()
         }
     }

@@ -49,7 +49,7 @@ final class WebViewViewController: UIViewController {
     
     private func loadAuthView() {
         guard var urlComponents = URLComponents(string: WebViewConstants.unsplashAuthorizeURLString) else {
-            print("NL: Ошибка загрузки loadAuthView")
+            print("Ошибка загрузки loadAuthView")
             return }
         
         urlComponents.queryItems = [
@@ -60,7 +60,7 @@ final class WebViewViewController: UIViewController {
         ]
         
         guard let url = urlComponents.url else {
-            print("NL: Ошибка сборки и загрузки loadAuthView")
+            print("Ошибка сборки и загрузки loadAuthView")
             return }
         let request = URLRequest(url: url)
         webView.load(request)
@@ -89,10 +89,10 @@ extension WebViewViewController: WKNavigationDelegate {
             let items = urlComponents.queryItems,
             let codeItem = items.first(where: { $0.name == "code" })
         {
-            print("NL: Получен код авторизации:", url)
+            print("Ошибка: Получен код авторизации:", url)
             return codeItem.value
         } else {
-            print("NL: Нет кода авторизации в WebViewViewController")
+            print("Ошибка: Нет кода авторизации в WebViewViewController")
             return nil
         }
     }

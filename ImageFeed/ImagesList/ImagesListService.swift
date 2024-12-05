@@ -24,17 +24,17 @@ final class ImagesListService {
         assert(Thread.isMainThread)
         
         guard let token = oauth2TokenStorage.token else {
-            print("NL: no token in fetchProfileImageURL")
+            print("Ошибка: no token in fetchProfileImageURL")
             completion(.failure(NetworkError.invalidRequest))
             return
         }
         
-        guard lastToken != token else {
-            completion(.failure(NetworkError.invalidRequest))
-            return
-        }
-        
-        lastToken = token
+        //        guard lastToken != token else {
+        //            completion(.failure(NetworkError.invalidRequest))
+        //            return
+        //        }
+        //
+        //        lastToken = token
         task?.cancel()
         
         let nextPage = (lastLoadedPage ?? 0) + 1
@@ -49,18 +49,18 @@ final class ImagesListService {
         let task = urlSession.objectTask(for: request) { [weak self] (result: Result<[PhotoResult], Error>) in
             guard let self else { return }
             DispatchQueue.main.async {
-            switch result {
-            case .success(let data):
+                switch result {
+                case .success(let data):
                     self.photos.append(contentsOf: data.map(self.updatePhoto))
-                self.lastLoadedPage = nextPage
-                NotificationCenter.default.post(
-                    name: ImagesListService.didChangeNotification,
-                    object: self)
-                completion(.success(String(nextPage)))
-            case .failure(let error):
-                print("NL: Ошибка декодирования photo в ImagesListService")
-                completion(.failure(error))
-            }
+                    self.lastLoadedPage = nextPage
+                    NotificationCenter.default.post(
+                        name: ImagesListService.didChangeNotification,
+                        object: self)
+                    completion(.success(String(nextPage)))
+                case .failure(let error):
+                    print("Ошибка декодирования photo в ImagesListService:\(error)")
+                    completion(.failure(error))
+                }
             }
             self.task = nil
         }
@@ -72,17 +72,11 @@ final class ImagesListService {
         assert(Thread.isMainThread)
         
         guard let token = oauth2TokenStorage.token else {
-            print("NL: no token in fetchProfileImageURL")
+            print("Ошибка: no token in fetchProfileImageURL")
             completion(.failure(NetworkError.invalidRequest))
             return
         }
         
-        guard lastToken != token else {
-            completion(.failure(NetworkError.invalidRequest))
-            return
-        }
-        
-        lastToken = token
         task?.cancel()
         
         guard let request = likeRequest(token: token, photoId: photoId, httpMethod: isLike ? "POST" : "DELETE") else {
@@ -90,11 +84,12 @@ final class ImagesListService {
             completion(.failure(NetworkError.invalidRequest))
             return
         }
-        let task = urlSession.objectTask(for: request) { [weak self] (result: Result<[PhotoResult], Error>) in
-            switch result {
-            case .success(let data):
+        let task = urlSession.objectTask(for: request) { [weak self] (result: Result<LikeResult, Error>) in
+            DispatchQueue.main.async { [weak self] in
                 guard let self else { return }
-                DispatchQueue.main.async {
+                self.task = nil
+                switch result {
+                case .success(let data):
                     if let index = self.photos.firstIndex(where: { $0.id == photoId }) {
                         let photo = self.photos[index]
                         let newPhoto = Photo(
@@ -108,13 +103,12 @@ final class ImagesListService {
                         )
                         self.photos[index] = newPhoto
                     }
+                    completion(.success(()))
+                case .failure(let error):
+                    print("Ошибка декодирования likes в ImagesListService:\(error)")
+                    completion(.failure(error))
                 }
-                completion(.success(()))
-            case .failure(let error):
-                print("NL: Ошибка декодирования likes в ImagesListService")
-                completion(.failure(error))
             }
-            self?.task = nil
         }
         self.task = task
         task.resume()
@@ -138,7 +132,7 @@ extension ImagesListService {
             + "/photos?page=\(page)"
         )
         else {
-            print("NL: ImagesListService URL photo request failed")
+            print("Ошибка: ImagesListService URL photo request failed")
             return nil
         }
         var request = URLRequest(url: url)
@@ -153,7 +147,7 @@ extension ImagesListService {
             + "/photos/\(photoId)/like"
         )
         else {
-            print("NL: ImagesListService URL like request failed")
+            print("Ошибка: ImagesListService URL like request failed")
             return nil
         }
         var request = URLRequest(url: url)
