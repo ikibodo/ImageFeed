@@ -32,7 +32,6 @@ final class WebViewViewController: UIViewController {
         super.viewDidLoad()
         loadAuthView()
         webView.navigationDelegate = self
-        //        updateProgress() // старое API для KVO
         estimatedProgressObservation = webView.observe(
             \.estimatedProgress,
              options: [],

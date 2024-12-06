@@ -31,7 +31,6 @@ final class SplashViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         if let token = oauth2TokenStorage.token {
-            //  switchToTabBarController()
             self.fetchProfile(token: token)
         } else {
             guard let authViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "AuthViewController") as? AuthViewController

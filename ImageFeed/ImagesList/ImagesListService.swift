@@ -15,7 +15,12 @@ final class ImagesListService {
     private let oauth2TokenStorage = OAuth2TokenStorage()
     private let urlSession = URLSession.shared
     private var task: URLSessionTask?
-    private var lastToken: String?
+    
+    private let dateFormatter = {
+        let dateFormatter = ISO8601DateFormatter()
+        dateFormatter.formatOptions = [.withInternetDateTime]
+        return dateFormatter
+    }()
     
     private init() {}
     
@@ -28,13 +33,7 @@ final class ImagesListService {
             completion(.failure(NetworkError.invalidRequest))
             return
         }
-        
-        //        guard lastToken != token else {
-        //            completion(.failure(NetworkError.invalidRequest))
-        //            return
-        //        }
-        //
-        //        lastToken = token
+
         task?.cancel()
         
         let nextPage = (lastLoadedPage ?? 0) + 1
@@ -116,12 +115,12 @@ final class ImagesListService {
     
     private func updatePhoto(_ updatePhoto: PhotoResult) -> Photo {
         return Photo.init(id: updatePhoto.id,
-                          size: CGSize(width: updatePhoto.width, height: updatePhoto.height),
-                          createdAt: ISO8601DateFormatter().date(from: updatePhoto.createdAt ?? ""),
+                          size: CGSize(width: updatePhoto.width ?? 0, height: updatePhoto.height ?? 0),
+                          createdAt: dateFormatter.date(from: updatePhoto.createdAt ?? ""),
                           welcomeDescription: updatePhoto.description,
                           thumbImageURL: updatePhoto.urls.thumb,
                           largeImageURL: updatePhoto.urls.full,
-                          isLiked: updatePhoto.likedByUser)
+                          isLiked: updatePhoto.likedByUser ?? false)
     }
 }
 

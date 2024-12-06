@@ -117,10 +117,11 @@ extension ImagesListViewController {
               let photoUrl = URL(string: url)
         else { return }
         cell.cellImage.kf.indicatorType = .activity
+        cell.cellImage.contentMode = .center
         cell.cellImage.kf.setImage(with: photoUrl,
                                    placeholder: UIImage(named: "photos_placeholder")) { [weak self] _ in
             guard let self = self else { return }
-            self.tableView.reloadRows(at: [indexPath], with: .automatic)
+            cell.cellImage.contentMode = .scaleToFill
         }
         if let date = photoURL.createdAt {
             cell.dateLabel.text = dateFormatter.string(from: date)
@@ -138,7 +139,6 @@ extension ImagesListViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        //        return UITableView.automaticDimension
         let imageSize = photos[indexPath.row].size
         let imageInsets = UIEdgeInsets(top: 4, left: 16, bottom: 4, right: 16)
         let imageViewWidth = tableView.bounds.width - imageInsets.left - imageInsets.right

@@ -111,11 +111,14 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="photos_placeholder" translatesAutoresizingMaskIntoConstraints="NO" id="iiG-uF-vDP">
+                                <rect key="frame" x="155" y="388.66666666666669" width="83" height="75"/>
+                            </imageView>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="h8S-2q-jEL">
                                 <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                                 <subviews>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="0" translatesAutoresizingMaskIntoConstraints="NO" id="wPN-zt-3GG">
-                                        <rect key="frame" x="0.0" y="0.0" width="271" height="352"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     </imageView>
                                 </subviews>
@@ -153,11 +156,13 @@
                         <viewLayoutGuide key="safeArea" id="qBQ-Hu-4mg"/>
                         <color key="backgroundColor" red="0.1019607857" green="0.10588235410000001" blue="0.13333334029999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
+                            <constraint firstItem="iiG-uF-vDP" firstAttribute="centerX" secondItem="KXv-al-lTz" secondAttribute="centerX" id="3hP-n5-n4u"/>
                             <constraint firstItem="h8S-2q-jEL" firstAttribute="leading" secondItem="qBQ-Hu-4mg" secondAttribute="leading" id="E2A-UL-guh"/>
                             <constraint firstItem="bE6-87-sAk" firstAttribute="leading" secondItem="qBQ-Hu-4mg" secondAttribute="leading" constant="9" id="Jkf-q7-9uS"/>
                             <constraint firstItem="h8S-2q-jEL" firstAttribute="trailing" secondItem="qBQ-Hu-4mg" secondAttribute="trailing" id="da8-TI-sUP"/>
                             <constraint firstItem="h8S-2q-jEL" firstAttribute="bottom" secondItem="KXv-al-lTz" secondAttribute="bottom" id="gRF-z8-JSu"/>
                             <constraint firstItem="bE6-87-sAk" firstAttribute="top" secondItem="qBQ-Hu-4mg" secondAttribute="top" constant="9" id="jiE-d8-YtI"/>
+                            <constraint firstItem="iiG-uF-vDP" firstAttribute="centerY" secondItem="KXv-al-lTz" secondAttribute="centerY" id="k27-F4-gF0"/>
                             <constraint firstItem="h8S-2q-jEL" firstAttribute="top" secondItem="KXv-al-lTz" secondAttribute="top" id="sxZ-BA-rto"/>
                             <constraint firstItem="hCu-Bo-ip1" firstAttribute="centerX" secondItem="qBQ-Hu-4mg" secondAttribute="centerX" id="yr2-qP-ODc"/>
                             <constraint firstItem="qBQ-Hu-4mg" firstAttribute="bottom" secondItem="hCu-Bo-ip1" secondAttribute="bottom" constant="16" id="zL4-y1-H9i"/>
@@ -310,6 +315,7 @@
         <image name="auth_screen_logo" width="60" height="60"/>
         <image name="like_button_on" width="42" height="42"/>
         <image name="nav_back_button_white" width="24" height="24"/>
+        <image name="photos_placeholder" width="83" height="75"/>
         <image name="share_button" width="51" height="51"/>
         <image name="tab_editorial_active" width="30.333333969116211" height="30"/>
         <systemColor name="systemBackgroundColor">

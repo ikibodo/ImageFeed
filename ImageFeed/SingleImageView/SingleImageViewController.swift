@@ -23,7 +23,7 @@ final class SingleImageViewController: UIViewController {
     
     private func setupPhoto() {
         guard let imageURL = imageURL else {
-            print("SingleImageViewController: imageURL is nil")
+            print("NL: SingleImageViewController: imageURL is nil")
             return
         }
         UIBlockingProgressHUD.show()

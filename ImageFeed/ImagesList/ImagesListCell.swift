@@ -26,7 +26,6 @@ final class ImagesListCell: UITableViewCell {
     override func prepareForReuse() {
             super.prepareForReuse()
         cellImage.kf.cancelDownloadTask()
-//        cellImage.image = UIImage(named: "photos_placeholder")
         }
     
     @IBAction private func likeButtonClicked() {
