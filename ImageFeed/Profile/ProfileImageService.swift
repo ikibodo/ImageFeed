@@ -74,7 +74,7 @@ final class ProfileImageService {
         }
         
         guard let url = URL(
-            string: "https://api.unsplash.com"
+            string: "\(Constants.baseURL)"
             + "/users/\(userName)"
         )
         else {

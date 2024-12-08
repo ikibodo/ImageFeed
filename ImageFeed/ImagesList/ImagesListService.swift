@@ -33,8 +33,10 @@ final class ImagesListService {
             completion(.failure(NetworkError.invalidRequest))
             return
         }
-
-        task?.cancel()
+        guard task == nil else {
+            task?.cancel()
+            return
+        }
         
         let nextPage = (lastLoadedPage ?? 0) + 1
         
@@ -127,7 +129,7 @@ final class ImagesListService {
 extension ImagesListService {
     private func photosRequest(token: String, page: Int) -> URLRequest? {
         guard let url = URL(
-            string: "https://api.unsplash.com"
+            string: "\(Constants.baseURL)"
             + "/photos?page=\(page)"
         )
         else {

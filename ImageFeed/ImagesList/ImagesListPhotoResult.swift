@@ -25,26 +25,3 @@ struct PhotoResult: Codable {
         case urls = "urls"
     }
 }
-struct UrlsResult: Codable {
-    let full: String?
-    let thumb: String?
-    
-    private enum CodingKeys: String, CodingKey {
-        case full = "full"
-        case thumb = "thumb"
-    }
-}
-
-struct Photo {
-    let id: String
-    let size: CGSize
-    let createdAt: Date?
-    let welcomeDescription: String?
-    let thumbImageURL: String?
-    let largeImageURL: String?
-    let isLiked: Bool
-}
-
-struct LikeResult: Codable {
-    let photo: PhotoResult?
-}

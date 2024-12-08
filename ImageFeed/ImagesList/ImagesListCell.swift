@@ -5,7 +5,6 @@
 //  Created by N L on 1.10.24..
 //
 
-
 import UIKit
 import Kingfisher
 
@@ -24,9 +23,9 @@ final class ImagesListCell: UITableViewCell {
     
     
     override func prepareForReuse() {
-            super.prepareForReuse()
+        super.prepareForReuse()
         cellImage.kf.cancelDownloadTask()
-        }
+    }
     
     @IBAction private func likeButtonClicked() {
         delegate?.imageListCellDidTapLike(self)
@@ -35,8 +34,8 @@ final class ImagesListCell: UITableViewCell {
     func setIsLiked(_ isLiked: Bool) {
         let image = isLiked ? UIImage(named: "like_button_on") : UIImage(named: "like_button_off")
         DispatchQueue.main.async { [weak self] in
-                    guard let self else {return}
-                    self.likeButton.setImage(image, for: .normal)
-                }
+            guard let self else {return}
+            self.likeButton.setImage(image, for: .normal)
+        }
     }
 }

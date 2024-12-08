@@ -66,14 +66,14 @@ final class ImagesListViewController: UIViewController, ImagesListCellDelegate {
         UIBlockingProgressHUD.show()
         imagesListService.changeLike(photoId: photo.id, isLike: !photo.isLiked) { [weak self] result in
             guard let self = self else { return }
+            UIBlockingProgressHUD.dismiss()
             switch result {
             case .success:
                 self.photos = self.imagesListService.photos
                 cell.setIsLiked(self.photos[indexPath.row].isLiked)
-                UIBlockingProgressHUD.dismiss()
+
             case .failure(let error):
                 print("ImagesListViewController - нет лайков: \(error)")
-                UIBlockingProgressHUD.dismiss()
                 self.showLikeErrorAlert()
             }
         }
@@ -126,7 +126,7 @@ extension ImagesListViewController {
         if let date = photoURL.createdAt {
             cell.dateLabel.text = dateFormatter.string(from: date)
         } else {
-            cell.dateLabel.text = "No date"
+            cell.dateLabel.text = ""
         }
         cell.setIsLiked(photoURL.isLiked)
     }

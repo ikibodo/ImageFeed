@@ -51,7 +51,7 @@ final class ProfileService {
     
     func profileRequest(token: String) -> URLRequest? {
         guard let url = URL(
-            string: "https://api.unsplash.com"
+            string: "\(Constants.baseURL)"
             + "/me"
         )
         else {
