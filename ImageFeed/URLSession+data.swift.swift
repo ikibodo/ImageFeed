@@ -33,14 +33,14 @@ extension URLSession {
                 if 200 ..< 300 ~= statusCode {
                     fulfillCompletionOnTheMainThread(.success(data))
                 } else {
-                    print("Нет статуса 200...300: \(String(describing: error?.localizedDescription)), statusCode: \(statusCode)")
+                    print("Нет статуса 200...300: \(String(describing: error)), statusCode: \(statusCode)")
                     fulfillCompletionOnTheMainThread(.failure(NetworkError.httpStatusCode(statusCode)))
                 }
             } else if let error = error {
-                print("Ошибка запроса: \(error.localizedDescription)")
+                print("Ошибка запроса: \(error)")
                 fulfillCompletionOnTheMainThread(.failure(NetworkError.urlRequestError(error)))
             } else {
-                print("Нет данных: \(String(describing: error?.localizedDescription))")
+                print("Нет данных: \(String(describing: error))")
                 fulfillCompletionOnTheMainThread(.failure(NetworkError.urlSessionError))
             }
         })
@@ -61,11 +61,11 @@ extension URLSession {
                     let response = try decoder.decode(T.self, from: data)
                     completion(.success(response))
                 } catch {
-                    print("Ошибка декодирования: \(error.localizedDescription), Данные: \(String(data: data, encoding: .utf8) ?? "")")
+                    print("Ошибка декодирования: \(error), Данные: \(String(data: data, encoding: .utf8) ?? "")")
                     completion(.failure(NetworkError.noJSONDecoding))
                 }
             case .failure(let error):
-                print("Данные не получены: \(error.localizedDescription)")
+                print("Данные не получены: \(error)")
                 completion(.failure(error))
             }
         }

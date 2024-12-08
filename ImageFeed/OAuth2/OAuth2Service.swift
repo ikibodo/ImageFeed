@@ -37,8 +37,9 @@ final class OAuth2Service {
             case .success(let data):
                 completion(.success(data.accessToken))
                 self?.oauth2TokenStorage.token = data.accessToken
+                print("TOKEN  \(data.accessToken)")
             case .failure(let error):
-                print("NL: Ошибка декодирования в OAuth2Service")
+                print("Ошибка декодирования в OAuth2Service")
                 completion(.failure(error))
             }
             self?.task = nil
@@ -58,7 +59,7 @@ final class OAuth2Service {
             + "&&code=\(code)"
             + "&&grant_type=authorization_code"
         ) else {
-            print("NL: OAuthTokenRequest failed")
+            print("Ошибка: OAuthTokenRequest failed")
             return nil }
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
