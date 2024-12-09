@@ -33,10 +33,7 @@ final class ImagesListService {
             completion(.failure(NetworkError.invalidRequest))
             return
         }
-        guard task == nil else {
-            task?.cancel()
-            return
-        }
+        guard task == nil else { return }
         
         let nextPage = (lastLoadedPage ?? 0) + 1
         
