@@ -26,7 +26,7 @@ final class ProfileImageService {
         assert(Thread.isMainThread)
         
         guard let token = oauth2TokenStorage.token else {
-            print("NL: no token in fetchProfileImageURL")
+            print("Ошибка: no token in fetchProfileImageURL")
             completion(.failure(NetworkError.invalidRequest))
             return
         }
@@ -57,7 +57,7 @@ final class ProfileImageService {
                     userInfo: ["URL": avatarURL]
                 )
             case .failure(let error):
-                print("NL: Ошибка декодирования в ProfileImageService")
+                print("Ошибка декодирования в ProfileImageService\(error)")
                 completion(.failure(error))
             }
             self?.task = nil
@@ -69,16 +69,16 @@ final class ProfileImageService {
     func profileImageRequest(token: String) -> URLRequest? {
         
         guard let userName = profileService.profile?.username else {
-            print("NL: profileImageRequest failed")
+            print("Ошибка: profileImageRequest failed")
             return nil
         }
         
         guard let url = URL(
-            string: "https://api.unsplash.com"
+            string: "\(Constants.baseURL)"
             + "/users/\(userName)"
         )
         else {
-            print("NL: profileImageRequest URL failed")
+            print("Ошибка: profileImageRequest URL failed")
             return nil
         }
         
@@ -86,5 +86,12 @@ final class ProfileImageService {
         request.httpMethod = "GET"
         request.setValue("Bearer \(oauth2TokenStorage.token ?? "")", forHTTPHeaderField: "Authorization")
         return request
+    }
+}
+
+extension ProfileImageService {
+    func cleanSession() {
+        avatarURL = nil
+        task = nil
     }
 }

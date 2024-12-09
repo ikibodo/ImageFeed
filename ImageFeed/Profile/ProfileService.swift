@@ -40,7 +40,7 @@ final class ProfileService {
                 self?.profile = profile
                 completion(.success(profile))
             case .failure(let error):
-                print("NL: Ошибка декодирования в ProfileService")
+                print("Ошибка декодирования в ProfileService\(error)")
                 completion(.failure(error))
             }
             self?.task = nil
@@ -51,16 +51,23 @@ final class ProfileService {
     
     func profileRequest(token: String) -> URLRequest? {
         guard let url = URL(
-            string: "https://api.unsplash.com"
+            string: "\(Constants.baseURL)"
             + "/me"
         )
         else {
-            print("NL: profileRequest failed")
+            print("Ошибка: profileRequest failed")
             return nil
         }
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue("Bearer \(oauth2TokenStorage.token ?? "")", forHTTPHeaderField: "Authorization")
         return request
+    }
+}
+
+extension ProfileService {
+    func cleanSession() {
+        profile = nil
+        task = nil
     }
 }
