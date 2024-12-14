@@ -90,7 +90,7 @@ extension SplashViewController: AuthViewControllerDelegate {
             case.success:
                 self.switchToTabBarController()
             case.failure(let error):
-                print("Ошибка в SplashViewController.fetchOAuthToken\(error)")
+                print("Ошибка в SplashViewController.fetchOAuthToken \(error)")
             }
         })
     }
@@ -104,7 +104,7 @@ extension SplashViewController: AuthViewControllerDelegate {
                 ProfileImageService.shared.fetchProfileImageURL(username: profile.username) {_ in }
                 self.switchToTabBarController()
             case .failure(let error):
-                print("Ошибка в SplashViewController.fetchProfile\(error)")
+                print("Ошибка в SplashViewController.fetchProfile \(error)")
                 break
             }
         }

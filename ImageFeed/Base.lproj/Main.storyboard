@@ -289,6 +289,7 @@
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="vNk-hB-b4o"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <accessibility key="accessibilityConfiguration" identifier="WebViewViewController"/>
                         <constraints>
                             <constraint firstAttribute="bottom" secondItem="Lnk-9F-Lid" secondAttribute="bottom" id="7Vo-OU-rMh"/>
                             <constraint firstItem="Lnk-9F-Lid" firstAttribute="top" secondItem="oci-ym-Itl" secondAttribute="top" id="Atg-1S-lTe"/>
