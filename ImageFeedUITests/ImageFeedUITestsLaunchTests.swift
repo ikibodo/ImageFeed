@@ -4,7 +4,6 @@
 //
 //  Created by N L on 26.9.24..
 //
-
 import XCTest
 
 final class ImageFeedUITestsLaunchTests: XCTestCase {

@@ -8,12 +8,19 @@ import Foundation
 import UIKit
 import Kingfisher
 
-final class ProfileViewController: UIViewController {
+protocol ProfileViewControllerProtocol: AnyObject {
+    var presenter: ProfileViewPresenterProtocol? { get set }
+    func updateAvatar()
+    func showLogoutAlert()
+}
+
+final class ProfileViewController: UIViewController, ProfileViewControllerProtocol {
+    var presenter: ProfileViewPresenterProtocol?
     
     let token = OAuth2TokenStorage().token
-    private var profileImageServiceObserver: NSObjectProtocol?
-    private let profileService = ProfileService.shared
-    private let profileLogoutService = ProfileLogoutService.shared
+    //    private var profileImageServiceObserver: NSObjectProtocol?
+    //    private let profileService = ProfileService.shared
+    //    private let profileLogoutService = ProfileLogoutService.shared
     
     private var avatarImageView: UIImageView = {
         let avatarImageView = UIImageView()
@@ -64,32 +71,34 @@ final class ProfileViewController: UIViewController {
         addSubViews()
         addConstraints()
         logoutButton.addTarget(self, action: #selector(didTapLogoutButton), for: .touchUpInside)
-        
-        if let profile = profileService.profile {
-            updateProfileDetails(profile: profile)
-        }
-        
-        if let profile = profileService.profile {
-            nameLabel.text = profile.name
-            loginNameLabel.text = profile.loginName
-            descriptionLabel.text = profile.bio
-        }
-        
-        profileImageServiceObserver = NotificationCenter.default.addObserver(
-            forName: ProfileImageService.didChangeNotification,
-            object: nil,
-            queue: .main) { [weak self] _ in
-                guard let self = self else { return }
-                self.updateAvatar()
-            }
+        presenter = ProfileViewPresenter(view: self)
+        updateProfileDetails()
+        //        if let profile = profileService.profile {
+        //            updateProfileDetails(profile: profile)
+        //        }
+        //
+        //        if let profile = profileService.profile {
+        //            nameLabel.text = profile.name
+        //            loginNameLabel.text = profile.loginName
+        //            descriptionLabel.text = profile.bio
+        //        }
+        presenter?.profileImageObserver()
+        //        profileImageServiceObserver = NotificationCenter.default.addObserver(
+        //            forName: ProfileImageService.didChangeNotification,
+        //            object: nil,
+        //            queue: .main) { [weak self] _ in
+        //                guard let self = self else { return }
+        //                self.updateAvatar()
+        //            }
         updateAvatar()
     }
     
-    private func updateAvatar() {
-        guard
-            let profileImageURL = ProfileImageService.shared.avatarURL,
-            let url = URL(string: profileImageURL)
-        else { return }
+    func updateAvatar() {
+        //        guard
+        //            let profileImageURL = ProfileImageService.shared.avatarURL,
+        //            let url = URL(string: profileImageURL)
+        //        else { return }
+        guard let url = presenter?.profileImageURL() else { return }
         let processor = RoundCornerImageProcessor(cornerRadius: 61)
         avatarImageView.kf.indicatorType = .activity
         avatarImageView.kf.setImage(with: url,
@@ -101,7 +110,8 @@ final class ProfileViewController: UIViewController {
         cache.clearDiskCache()
     }
     
-    private func updateProfileDetails(profile: Profile) {
+    private func updateProfileDetails() {
+        guard let profile = presenter?.profileDetails() else { return }
         nameLabel.text = profile.name
         loginNameLabel.text = profile.loginName
         descriptionLabel.text = profile.bio
@@ -138,14 +148,15 @@ final class ProfileViewController: UIViewController {
         
     }
     
-    private func showLogoutAlert() {
+    func showLogoutAlert() {
         let alert = UIAlertController(
             title: "Пока, пока!",
             message: "Уверены что хотите выйти?",
             preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "Нет", style: .default))
         alert.addAction(UIAlertAction(title: "Да", style: .default) { action in
-            self.profileLogoutService.logout()
+            self.presenter?.logoutProfile()
+            //            self.profileLogoutService.logout()
             guard let window = UIApplication.shared.windows.first else { return }
             window.rootViewController = SplashViewController()
         })
