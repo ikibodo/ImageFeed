@@ -8,21 +8,27 @@
 import UIKit
 import Kingfisher
 
-final class ImagesListViewController: UIViewController, ImagesListCellDelegate {
+public protocol ImagesListViewControllerProtocol: AnyObject {
+    var presenter: ImagesListViewPresenterProtocol? { get set }
+    func updateTableViewAnimated(oldCount: Int, newCount: Int) 
+}
+    
+final class ImagesListViewController: UIViewController, ImagesListCellDelegate, ImagesListViewControllerProtocol {
+    var presenter: ImagesListViewPresenterProtocol?
     
     private let showSingleImageSegueIdentifier = "ShowSingleImage"
     private let imagesListService = ImagesListService.shared
-    private var imagesListServiceObserver: NSObjectProtocol?
+//    private var imagesListServiceObserver: NSObjectProtocol?
     var photos: [Photo] = []
     
-    private let currentDate = Date()
-    
-    private let dateFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .medium
-        formatter.timeStyle = .none
-        return formatter
-    }()
+//    private let currentDate = Date()
+//    
+//    private let dateFormatter: DateFormatter = {
+//        let formatter = DateFormatter()
+//        formatter.dateStyle = .medium
+//        formatter.timeStyle = .none
+//        return formatter
+//    }()
     
     @IBOutlet private weak var tableView: UITableView!
     
@@ -32,14 +38,15 @@ final class ImagesListViewController: UIViewController, ImagesListCellDelegate {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.contentInset = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
-        
-        imagesListServiceObserver = NotificationCenter.default.addObserver(
-            forName: ImagesListService.didChangeNotification,
-            object: nil,
-            queue: .main) { [weak self] _ in
-                guard let self = self else { return }
-                self.updateTableViewAnimated()
-            }
+        presenter = ImagesListViewPresenter(view: self)
+        presenter?.imagesListObserver()
+//        imagesListServiceObserver = NotificationCenter.default.addObserver(
+//            forName: ImagesListService.didChangeNotification,
+//            object: nil,
+//            queue: .main) { [weak self] _ in
+//                guard let self = self else { return }
+//                self.updateTableViewAnimated()
+//            }
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -96,10 +103,10 @@ final class ImagesListViewController: UIViewController, ImagesListCellDelegate {
         imagesListService.fetchPhotosNextPage { _ in }
     }
     
-    private func updateTableViewAnimated() {
-        let oldCount = photos.count
-        let newCount = imagesListService.photos.count
-        if oldCount == newCount {return}
+    func updateTableViewAnimated(oldCount: Int, newCount: Int) {
+//        let oldCount = photos.count
+//        let newCount = imagesListService.photos.count
+//        if oldCount == newCount {return}
         tableView.performBatchUpdates {
             let indexPaths = (oldCount..<newCount).map { i in
                 IndexPath(row: i, section: 0) }
@@ -124,7 +131,8 @@ extension ImagesListViewController {
             cell.cellImage.contentMode = .scaleToFill
         }
         if let date = photoURL.createdAt {
-            cell.dateLabel.text = dateFormatter.string(from: date)
+//            cell.dateLabel.text = dateFormatter.string(from: date)
+            cell.dateLabel.text = presenter?.dateFormatter.string(from: date)
         } else {
             cell.dateLabel.text = ""
         }

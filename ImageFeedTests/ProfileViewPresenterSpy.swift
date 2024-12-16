@@ -7,12 +7,23 @@
 import ImageFeed
 import Foundation
 
-//final class ProfileViewPresenterSpy: ProfileViewPresenterProtocol {
-//    var presentProfileViewCalled: Bool = false
-//    var view: ProfileViewControllerProtocol?
-//    
-////    func presentProfileView(with profile: Profile) { это икскод придолжил
-////        presentProfileViewCalled = true
-////    }
-//}
-
+final class ProfileViewPresenterSpy: ProfileViewPresenterProtocol {
+    var view: ImageFeed.ProfileViewControllerProtocol?
+    var profileImageObserverCalled: Bool = false
+    var logoutProfileCalled: Bool = false
+    var profileImageURLCalled: Bool = false
+    
+    func profileImageObserver() {
+        profileImageObserverCalled = true
+        return
+    }
+    
+    func logoutProfile() {
+        logoutProfileCalled = true
+    }
+    
+    func profileImageURL() -> URL? {
+        profileImageURLCalled = true
+        return nil
+    }
+}

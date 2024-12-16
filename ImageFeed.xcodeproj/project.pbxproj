@@ -36,6 +36,36 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		6C140F402D0F51D30001A7E4 /* Exceptions for "ImageFeedTests" folder in "ImageFeed" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				ImagesListViewControllerSpy.swift,
+				ImagesListViewPresenterSpy.swift,
+				ImagesListViewTests.swift,
+				ProfileViewControllerSpy.swift,
+				ProfileViewPresenterSpy.swift,
+				ProfileViewTests.swift,
+				WebViewPresenterSpy.swift,
+				WebViewTests.swift,
+				WebViewViewControllerSpy.swift,
+			);
+			target = 6C9A15812CA59288005E1485 /* ImageFeed */;
+		};
+		6C140F412D0F51D30001A7E4 /* Exceptions for "ImageFeedTests" folder in "ImageFeedTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				ImagesListViewControllerSpy.swift,
+				ImagesListViewPresenterSpy.swift,
+				ImagesListViewTests.swift,
+				ProfileViewControllerSpy.swift,
+				ProfileViewPresenterSpy.swift,
+				ProfileViewTests.swift,
+				WebViewPresenterSpy.swift,
+				WebViewTests.swift,
+				WebViewViewControllerSpy.swift,
+			);
+			target = 6C9A159A2CA59289005E1485 /* ImageFeedTests */;
+		};
 		6C9A15AD2CA59289005E1485 /* Exceptions for "ImageFeed" folder in "ImageFeed" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -46,17 +76,21 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		6C140F392D0F51D30001A7E4 /* ImageFeedTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				6C140F402D0F51D30001A7E4 /* Exceptions for "ImageFeedTests" folder in "ImageFeed" target */,
+				6C140F412D0F51D30001A7E4 /* Exceptions for "ImageFeedTests" folder in "ImageFeedTests" target */,
+			);
+			path = ImageFeedTests;
+			sourceTree = "<group>";
+		};
 		6C9A15842CA59288005E1485 /* ImageFeed */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				6C9A15AD2CA59289005E1485 /* Exceptions for "ImageFeed" folder in "ImageFeed" target */,
 			);
 			path = ImageFeed;
-			sourceTree = "<group>";
-		};
-		6C9A159E2CA59289005E1485 /* ImageFeedTests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = ImageFeedTests;
 			sourceTree = "<group>";
 		};
 		6C9A15A82CA59289005E1485 /* ImageFeedUITests */ = {
@@ -98,7 +132,7 @@
 			isa = PBXGroup;
 			children = (
 				6C9A15842CA59288005E1485 /* ImageFeed */,
-				6C9A159E2CA59289005E1485 /* ImageFeedTests */,
+				6C140F392D0F51D30001A7E4 /* ImageFeedTests */,
 				6C9A15A82CA59289005E1485 /* ImageFeedUITests */,
 				6C9A15832CA59288005E1485 /* Products */,
 			);
@@ -130,6 +164,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
+				6C140F392D0F51D30001A7E4 /* ImageFeedTests */,
 				6C9A15842CA59288005E1485 /* ImageFeed */,
 			);
 			name = ImageFeed;
@@ -154,9 +189,6 @@
 			);
 			dependencies = (
 				6C9A159D2CA59289005E1485 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				6C9A159E2CA59289005E1485 /* ImageFeedTests */,
 			);
 			name = ImageFeedTests;
 			packageProductDependencies = (

@@ -8,18 +8,18 @@ import Foundation
 import UIKit
 import Kingfisher
 
-protocol ProfileViewControllerProtocol: AnyObject {
+public protocol ProfileViewControllerProtocol: AnyObject {
     var presenter: ProfileViewPresenterProtocol? { get set }
     func updateAvatar()
-    func showLogoutAlert()
 }
 
 final class ProfileViewController: UIViewController, ProfileViewControllerProtocol {
     var presenter: ProfileViewPresenterProtocol?
     
-    let token = OAuth2TokenStorage().token
+//    let token = OAuth2TokenStorage().token
+    private let profileService = ProfileService.shared
+    
     //    private var profileImageServiceObserver: NSObjectProtocol?
-    //    private let profileService = ProfileService.shared
     //    private let profileLogoutService = ProfileLogoutService.shared
     
     private var avatarImageView: UIImageView = {
@@ -68,20 +68,24 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor(hex: "#1A1B22")
+        
         addSubViews()
         addConstraints()
+        
         logoutButton.addTarget(self, action: #selector(didTapLogoutButton), for: .touchUpInside)
+        logoutButton.accessibilityIdentifier = "Logout Button"
+        
         presenter = ProfileViewPresenter(view: self)
-        updateProfileDetails()
-        //        if let profile = profileService.profile {
-        //            updateProfileDetails(profile: profile)
-        //        }
-        //
-        //        if let profile = profileService.profile {
-        //            nameLabel.text = profile.name
-        //            loginNameLabel.text = profile.loginName
-        //            descriptionLabel.text = profile.bio
-        //        }
+//        updateProfileDetails()
+                if let profile = profileService.profile {
+                    updateProfileDetails(profile: profile)
+                }
+        
+                if let profile = profileService.profile {
+                    nameLabel.text = profile.name
+                    loginNameLabel.text = profile.loginName
+                    descriptionLabel.text = profile.bio
+                }
         presenter?.profileImageObserver()
         //        profileImageServiceObserver = NotificationCenter.default.addObserver(
         //            forName: ProfileImageService.didChangeNotification,
@@ -110,8 +114,8 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
         cache.clearDiskCache()
     }
     
-    private func updateProfileDetails() {
-        guard let profile = presenter?.profileDetails() else { return }
+    private func updateProfileDetails(profile: Profile) {
+//        guard let profile = presenter?.profileDetails() else { return }
         nameLabel.text = profile.name
         loginNameLabel.text = profile.loginName
         descriptionLabel.text = profile.bio
@@ -148,7 +152,7 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
         
     }
     
-    func showLogoutAlert() {
+    private func showLogoutAlert() {
         let alert = UIAlertController(
             title: "Пока, пока!",
             message: "Уверены что хотите выйти?",

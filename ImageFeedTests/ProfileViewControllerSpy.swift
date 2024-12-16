@@ -7,6 +7,9 @@
 import ImageFeed
 import Foundation
 
-//final class ProfileViewControllerSpy: ProfileViewControllerProtocol {
-//    
-//}
+final class ProfileViewControllerSpy: ProfileViewControllerProtocol {
+    var presenter: (any ImageFeed.ProfileViewPresenterProtocol)?
+    
+    func updateAvatar() {
+    }
+}
