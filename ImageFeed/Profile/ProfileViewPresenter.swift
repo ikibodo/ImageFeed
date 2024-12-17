@@ -11,7 +11,6 @@ public protocol ProfileViewPresenterProtocol {
     var view: ProfileViewControllerProtocol? { get set }
     func profileImageObserver()
     func profileImageURL() -> URL?
-//    func profileDetails() -> Profile?
     func logoutProfile()
 }
 
@@ -34,7 +33,6 @@ final class ProfileViewPresenter: ProfileViewPresenterProtocol {
             queue: .main) { [weak self] _ in
                 guard let self = self else { return }
                 view?.updateAvatar()
-//                view?.updateProfileDetails()
             }
     }
     
@@ -45,11 +43,6 @@ final class ProfileViewPresenter: ProfileViewPresenterProtocol {
         else { return nil }
         return url
     }
-    
-//    func profileDetails() -> Profile? {
-//        guard let profile = profileService.profile else { return nil }
-//        return profile
-//    }
     
     func logoutProfile() {
         self.profileLogoutService.logout()

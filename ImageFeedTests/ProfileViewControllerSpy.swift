@@ -9,7 +9,9 @@ import Foundation
 
 final class ProfileViewControllerSpy: ProfileViewControllerProtocol {
     var presenter: (any ImageFeed.ProfileViewPresenterProtocol)?
+    var updateAvatarCalled: Bool = false
     
     func updateAvatar() {
+        updateAvatarCalled = true
     }
 }

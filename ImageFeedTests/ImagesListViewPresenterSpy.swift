@@ -21,5 +21,4 @@ final class ImagesListViewPresenterSpy: ImagesListViewPresenterProtocol {
     func updateTableView() {
         updateTableViewCalled = true
     }
-
 }

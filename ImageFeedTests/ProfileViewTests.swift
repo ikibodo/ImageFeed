@@ -25,9 +25,10 @@ final class ProfileViewTests: XCTestCase {
         viewController.presenter = presenter
         presenter.view = viewController
         
-        presenter.profileImageURL()
+        let result = presenter.profileImageURL()
         
         XCTAssertTrue(presenter.profileImageURLCalled)
+        XCTAssertNil(result)
     }
     
     func testCallsLogoutProfile() {
@@ -41,4 +42,14 @@ final class ProfileViewTests: XCTestCase {
         XCTAssertTrue(presenter.logoutProfileCalled)
     }
     
+    func testUpdateAvatar() {
+        let viewController = ProfileViewControllerSpy()
+        let presenter = ProfileViewPresenterSpy()
+        viewController.presenter = presenter
+        presenter.view = viewController
+        
+        presenter.view?.updateAvatar()
+        
+        XCTAssertTrue(viewController.updateAvatarCalled)
+    }
 }

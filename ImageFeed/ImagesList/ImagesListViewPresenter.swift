@@ -49,11 +49,4 @@ final class ImagesListViewPresenter: ImagesListViewPresenterProtocol {
         if oldCount == newCount {return}
         view?.updateTableViewAnimated(oldCount: oldCount, newCount: newCount)
     }
-    
-//    func dateFormatter() -> DateFormatter {
-//            let formatter = DateFormatter()
-//            formatter.dateStyle = .medium
-//            formatter.timeStyle = .none
-//            return formatter
-//    }
 }
