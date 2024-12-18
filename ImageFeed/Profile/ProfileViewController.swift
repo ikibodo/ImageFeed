@@ -72,11 +72,15 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
         logoutButton.accessibilityIdentifier = "Logout Button"
         
         presenter = ProfileViewPresenter(view: self)
-        
         if let profile = profileService.profile {
             updateProfileDetails(profile: profile)
         }
-    
+        
+        if let profile = profileService.profile {
+            nameLabel.text = profile.name
+            loginNameLabel.text = profile.loginName
+            descriptionLabel.text = profile.bio
+        }
         presenter?.profileImageObserver()
         updateAvatar()
     }
